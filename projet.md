@@ -1,4 +1,4 @@
-# Mon projet : Petite animation web avec Anime.js
+# Mon projet : animation web avec Anime.js
 
 Pour ce projet, j’ai décidé de faire une petite animation sur une page web avec Anime.js.  
 C’est un outil qui permet de créer des effets visuels sans avoir besoin de trop coder, donc parfait pour moi.  
