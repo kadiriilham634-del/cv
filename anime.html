@@ -1,83 +1,58 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Anime.js Form Example</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-            background-color: #f4f4f9;
-        }
-        form {
-            background: #fff;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
-        input, button {
-            display: block;
-            width: 100%;
-            margin-bottom: 15px;
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-        }
-        button {
-            background-color: #007BFF;
-            color: white;
-            border: none;
-            cursor: pointer;
-        }
-        button:hover {
-            background-color: #0056b3;
-        }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Animation Anime.js</title>
 
-.docs-demo.is-active #text-splittext-textsplitter-settings-accessible .docs-demo-template {
-  opacity: 0;
-}
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      background-color: #f4f4f9;
+    }
 
-#text-splittext-textsplitter-settings-accessible .large.row {
-  perspective: 600px;
-}
-
-#text-splittext-textsplitter-settings-accessible .text-xl {
-  transform-style: preserve-3d;
-}
-
-    </style>
+    p {
+      font-size: 40px;
+      font-weight: bold;
+      color: #333;
+    }
+  </style>
 </head>
 <body>
-    
-<div class="large centered row">
-  <p class="text-xl">Split and clone text.</p>
-</div>
-<div class="small row"></div>
-    
-    <script type="module">
 
-import { createTimeline, stagger, splitText } from 'https://esm.sh/animejs';
+  <p class="text">Split and clone text.</p>
 
-const { chars } = splitText('p', {
-  chars: {
-    wrap: 'clip',
-    clone: 'bottom'
-  },
-});
+  <!-- Anime.js depuis CDN (compatible GitHub Pages) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+  <script>
+    const text = document.querySelector('.text');
 
-createTimeline()
-.add(chars, {
-  y: '-100%',
-  loop: true,
-  loopDelay: 350,
-  duration: 750,
-  ease: 'inOut(2)',
-}, stagger(150, { from: 'center' }));
-    </script>
+    // Découper le texte en lettres
+    text.innerHTML = text.textContent.split('').map(letter => `<span>${letter}</span>`).join('');
+
+    // Animation fluide
+    anime.timeline({loop: true})
+      .add({
+        targets: '.text span',
+        translateY: [-40, 0],
+        opacity: [0, 1],
+        easing: 'easeOutExpo',
+        duration: 700,
+        delay: anime.stagger(100)
+      })
+      .add({
+        targets: '.text span',
+        translateY: [0, 40],
+        opacity: [1, 0],
+        easing: 'easeInExpo',
+        duration: 700,
+        delay: anime.stagger(100)
+      });
+  </script>
 </body>
 </html>
