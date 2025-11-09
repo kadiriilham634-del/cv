@@ -31,29 +31,13 @@
  <!-- Anime.js depuis CDN (compatible GitHub Pages) -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
 <script>
-  const text = document.querySelector('.text');
-
-  // Découper le texte en lettres
-  text.innerHTML = text.textContent.split('').map(letter => `<span>${letter}</span>`).join('');
-
-  // Animation fluide
-  anime.timeline({ loop: true })
-    .add({
-      targets: '.text span',
-      translateY: [-40, 0],
-      opacity: [0, 1],
-      easing: 'easeOutExpo',
-      duration: 700,
-      delay: anime.stagger(100)
-    })
-    .add({
-      targets: '.text span',
-      translateY: [0, 40],
-      opacity: [1, 0],
-      easing: 'easeInExpo',
-      duration: 700,
-      delay: anime.stagger(100)
-    });
+anime({
+  targets: 'body',
+  backgroundColor: ['#f4f4f9', '#ffb6c1', '#f4f4f9'],
+  duration: 3000,
+  easing: 'easeInOutQuad',
+  loop: true
+});
 </script>
 
 </body>
