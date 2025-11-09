@@ -1,158 +1,319 @@
-<link href='https://fonts.googleapis.com/css?family=Lato:400,300,700' rel='stylesheet' type='text/css'>
-<link rel="stylesheet" href="style.css">
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>  CV - Ilan MORICE</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap');
+        
+        :root {
+            --primary-color: #007bff; /* Bleu */
+            --secondary-color: #343a40; /* Gris foncé */
+            --text-color: #495057;
+            --light-bg: #f8f9fa;
+            --font-family: 'Roboto', sans-serif;
+        }
 
-<div class="container">
-  <div class="header">
-    <div class="full-name">
-      <span class="first-name">John</span> 
-      <span class="last-name">Doe</span>
-    </div>
-    <div class="contact-info">
-      <span class="email">Email: </span>
-      <span class="email-val">john.doe@gmail.com</span>
-      <span class="separator"></span>
-      <span class="phone">Phone: </span>
-      <span class="phone-val">111-222-3333</span>
-    </div>
-    
-    <div class="about">
-      <span class="position">Front-End Developer </span>
-      <span class="desc">
-        I am a front-end developer with more than 3 years of experience writing html, css, and js. I'm motivated, result-focused and seeking a successful team-oriented company with opportunity to grow. 
-      </span>
-    </div>
-  </div>
-   <div class="details">
-    <div class="section">
-      <div class="section__title">Experience</div>
-      <div class="section__list">
-        <div class="section__list-item">
-          <div class="left">
-            <div class="name">KlowdBox</div>
-            <div class="addr">San Fr, CA</div>
-            <div class="duration">Jan 2011 - Feb 2015</div>
-          </div>
-          <div class="right">
-            <div class="name">Fr developer</div>
-            <div class="desc">did This and that</div>
-          </div>
+        body {
+            font-family: var(--font-family);
+            line-height: 1.6;
+            color: var(--text-color);
+            margin: 0;
+            padding: 0;
+            background-color: #fff;
+            -webkit-print-color-adjust: exact;
+        }
+
+        .cv-container {
+            width: 210mm; /* A4 width */
+            margin: 0 auto;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            background-color: #fff;
+            padding: 30px; /* Ajouter un padding général */
+        }
+
+        .sidebar {
+            background-color: var(--secondary-color);
+            color: #fff;
+            padding: 20px 30px; /* Devient le header de la page */
+            margin-bottom: 30px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Ajout d'une ombre pour un meilleur visuel */
+        }
+
+        .main-content {
+            padding: 0 30px; /* Supprimer le padding du main-content car il est déjà dans le container */
+        }
+
+        .profile-section {
+            text-align: center;
+            margin-bottom: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+        }
+        .profile-text {
+            text-align: left;
+        }
+        .profile-photo {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            overflow: hidden;
+            border: 3px solid #fff;
+        }
+        .profile-photo img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .profile-section h1 {
+            font-size: 1.8em;
+            font-weight: 700;
+            margin: 0 0 5px 0;
+            color: #fff;
+        }
+        .profile-section h2 {
+            font-size: 1.1em;
+            font-weight: 300;
+            margin: 0;
+            color: var(--primary-color);
+            text-transform: uppercase;
+        }
+
+        .contact-info {
+            list-style: none;
+            padding: 0;
+            margin-top: 20px;
+        }
+        .contact-info li {
+            margin-bottom: 10px;
+            font-size: 0.9em;
+        }
+        .contact-info a {
+            color: #fff;
+            text-decoration: none;
+        }
+
+        .section-title {
+            font-size: 1.3em;
+            font-weight: 700;
+            color: var(--primary-color);
+            text-transform: uppercase;
+            border-bottom: 2px solid var(--primary-color);
+            padding-bottom: 5px;
+            margin-bottom: 20px;
+        }
+
+        .experience-item, .education-item, .summary-section p {
+            margin-bottom: 25px;
+            padding-left: 15px;
+            border-left: 3px solid var(--primary-color);
+        }
+        .experience-item:last-child, .education-item:last-child, .summary-section p:last-child {
+            margin-bottom: 0;
+        }
+
+        .item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            margin-bottom: 5px;
+        }
+        .item-header h3 {
+            font-size: 1.1em;
+            font-weight: 700;
+            color: var(--secondary-color);
+            margin: 0;
+        }
+        .item-header span {
+            font-size: 0.85em;
+            font-weight: 400;
+            color: var(--text-color);
+        }
+        .item-details {
+            font-size: 0.9em;
+            margin-bottom: 10px;
+        }
+        .item-details p {
+            margin: 0;
+        }
+        .item-details ul {
+            padding-left: 20px;
+            margin-top: 5px;
+        }
+        .item-details li {
+            margin-bottom: 5px;
+        }
+        .item-details strong {
+            color: var(--secondary-color);
+        }
+
+        .summary-section {
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #ddd;
+        }
+        .summary-section p {
+            font-size: 1em;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    <div class="cv-container">
+        <div class="sidebar">
+            <div class="profile-section">
+                <div class="profile-photo">
+                    <img src="image cv arbre.jpg" alt="Photo de profil de Ilan">
+                </div>
+                <div class="profile-text">
+                    <h1>Ilan MORICE</h1>
+                    <h2>  Etudiant en Master Humanités Numériques </h2>
+                </div>
+            </div>
+                
+            <ul class="contact-info">
+                    <li><a href="tel:+33698723141">Téléphone : 07 86 43 86 01</a></li>
+                    <li><a href="nalimo352@gmail.com">Email: nalimo352@gmail.com</a></li>
+                    <li>De : Stains</li>
+                    <li><a href="https://github.com/nali-333" target="_blank">GitHub:nali-333</a></li>
+                </ul>
+            </div>
+
+        <div class="main-content">
+            <div class="summary-section">
+                <h2 class="section-title">Profil</h2>
+                <p>Étudiant en Master Humanités Numériques</p>
+            </div>
+
+            <!-- FORMATIONS -->
+            <h2 class="section-title">Formations</h2>
+
+            <div class="education-item">
+                <div class="item-header">
+                    <h3>Master Humanités numériques - M1</h3>
+                    <span>2025-2026 (en cours)</span>
+                </div>
+                <div class="item-details">
+                    <p><strong>Université Paris 8 Saint-Denis</strong></p>
+                    <p>Actuellement en première année de Master.</p>
+                </div>
+            </div>
+
+            <div class="education-item">
+                <div class="item-header">
+                    <h3>Licence Information et Communication</h3>
+                    <span>2022-2025</span>
+                </div>
+                <div class="item-details">
+                    <p><strong>Université Rennes 2</strong></p>
+                    <p>Mention Assez Bien.</p>
+                </div>
+            </div>
+
+            <div class="education-item">
+                <div class="item-header">
+                    <h3>Baccalauréat lycée Coëtlogon</h3>
+                    <span>2022</span>
+                </div>
+                <div class="item-details">
+                    <p><strong>Rennes</strong></p>
+                </div>
+            </div>
+
+            <!-- EXPÉRIENCES PROFESSIONNELLES -->
+            <h2 class="section-title">Expériences Professionnelles</h2>
+
+            <div class="experience-item">
+                <div class="item-header">
+                    <h3>Bénévole - L'épicerie gratuite de Rennes 2</h3>
+                    <span>Septembre 2022 - Juin 2025</span>
+                </div>
+                <div class="item-details">
+                    <ul>
+                        <li><strong>Distribution alimentaire </strong>
+                        <li><strong>Récoltes de denrées </strong> 
+                        
+                    </ul>
+                </div>
+            </div>
+
+            <div class="experience-item">
+                <div class="item-header">
+                    <h3>Bénévole - Coach équipes League of Legends - Rennes 2 Esport</h3>
+                    <span>Septembre 2024 - Juin 2025</span>
+                </div>
+                <div class="item-details">
+                    <ul>
+                        <li><strong>Coaching individuel et collectif pour améliorer la coordination et la performance des joueurs </strong> 
+                        <li><strong>Participation à l’organisation d’événements </strong> 
+                    </ul>
+                </div>
+            </div>
+
+            <div class="experience-item">
+                <div class="item-header">
+                    <h3>Stage - Mouvement de la Paix</h3>
+                    <span>Janvier 2022 - Mars 2022</span>
+                </div>
+                <div class="item-details">
+                    <p><strong>Rennes</strong></p>
+                    <ul>
+                        <li><strong>Création d’une affiche promotionnelle pour un événement local </strong> 
+                        <li><strong>Participation à l’organisation de l’événement en collaboration avec d’autres stagiaires </strong>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="experience-item">
+                <div class="item-header">
+                    <h3>Stage - Bretagne Mutations, Agence de relocation</h3>
+                    <span>Mai 2021 - Juillet 2021</span>
+                </div>
+                <div class="item-details">
+                    <p><strong>Rennes</strong>
+                    <ul>
+                        <li><strong>Constitution de dossiers de subventionnement</strong> 
+                        <li><strong>Mise à jour de tableaux de bord</strong> 
+                    </ul>
+                </div>
+            </div>
+
+            <!-- PROJET BAOLAB -->
+            <h2 class="section-title">CENTRES D’INTERET</h2>
+            <div class="experience-item">
+                <div class="item-header">
+                    
+                <div class="item-details">
+                    <ul>
+                        <li>Sport</li>
+                        <li>Esport et jeux vidéos</li>
+                    <li>Culture Pop</li>
+                    <li>Gastronomie</li>
+                    <li>Musique</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- COMPÉTENCES TECHNIQUES -->
+            <h2 class="section-title">Mon approche et mes atouts</h2>
+            <div class="item-details">
+                <p><strong>Mes stages et mon engagement associatif m’ont appris à travailler en équipe et à être autonome.
+                    Persévérant et curieux, j’aime aller au bout des projets et trouver des solutions aux imprévus. 
+                    Ma licence en info-com a renforcé mon esprit critique et mon intérêt pour les médias et le numérique.</strong>:
+                
+            </div>
+
+            <!-- LANGUES & CERTIFICATIONS -->
+            <h2 class="section-title">Langues & Certification</h2>
+            <div class="item-details">
+                <p><strong>Langues</strong>: Français (Courant), Anglais (Opérationnel)</p>
+                <p><strong>Certifications</strong>: CERTIFICATION Voltaire (Orthographe niveau technique)</p>
+               
+            </div>
         </div>
-                <div class="section__list-item">
-          <div class="left">
-            <div class="name">Akount</div>
-            <div class="addr">San Monica, CA</div>
-            <div class="duration">Jan 2011 - Feb 2015</div>
-          </div>
-          <div class="right">
-            <div class="name">Fr developer</div>
-            <div class="desc">did This and that</div>
-          </div>
-        </div>
-
-      </div>
     </div>
-    <div class="section">
-      <div class="section__title">Education</div>
-      <div class="section__list">
-        <div class="section__list-item">
-          <div class="left">
-            <div class="name">Sample Institute of technology</div>
-            <div class="addr">San Fr, CA</div>
-            <div class="duration">Jan 2011 - Feb 2015</div>
-          </div>
-          <div class="right">
-            <div class="name">Fr developer</div>
-            <div class="desc">did This and that</div>
-          </div>
-        </div>
-        <div class="section__list-item">
-          <div class="left">
-            <div class="name">Akount</div>
-            <div class="addr">San Monica, CA</div>
-            <div class="duration">Jan 2011 - Feb 2015</div>
-          </div>
-          <div class="right">
-            <div class="name">Fr developer</div>
-            <div class="desc">did This and that</div>
-          </div>
-        </div>
-
-      </div>
-      
-  </div>
-     <div class="section">
-      <div class="section__title">Projects</div> 
-       <div class="section__list">
-         <div class="section__list-item">
-           <div class="name">DSP</div>
-           <div class="text">I am a front-end developer with more than 3 years of experience writing html, css, and js. I'm motivated, result-focused and seeking a successful team-oriented company with opportunity to grow.</div>
-         </div>
-         
-         <div class="section__list-item">
-                    <div class="name">DSP</div>
-           <div class="text">I am a front-end developer with more than 3 years of experience writing html, css, and js. I'm motivated, result-focused and seeking a successful team-oriented company with opportunity to grow. <a href="/login">link</a>
-           </div>
-         </div>
-       </div>
-    </div>
-     <div class="section">
-       <div class="section__title">Skills</div>
-       <div class="skills">
-         <div class="skills__item">
-           <div class="left"><div class="name">
-             Javascript
-             </div></div>
-           <div class="right">
-                          <input  id="ck1" type="checkbox" checked/>
-
-             <label for="ck1"></label>
-                          <input id="ck2" type="checkbox" checked/>
-
-              <label for="ck2"></label>
-                         <input id="ck3" type="checkbox" />
-
-              <label for="ck3"></label>
-                           <input id="ck4" type="checkbox" />
-            <label for="ck4"></label>
-                          <input id="ck5" type="checkbox" />
-              <label for="ck5"></label>
-
-           </div>
-         </div>
-         
-       </div>
-       <div class="skills__item">
-           <div class="left"><div class="name">
-             CSS</div></div>
-           <div class="right">
-                          <input  id="ck1" type="checkbox" checked/>
-
-             <label for="ck1"></label>
-                          <input id="ck2" type="checkbox" checked/>
-
-              <label for="ck2"></label>
-                         <input id="ck3" type="checkbox" />
-
-              <label for="ck3"></label>
-                           <input id="ck4" type="checkbox" />
-            <label for="ck4"></label>
-                          <input id="ck5" type="checkbox" />
-              <label for="ck5"></label>
-
-           </div>
-         </div>
-         
-       </div>
-     <div class="section">
-     <div class="section__title">
-       Interests
-       </div>
-       <div class="section__list">
-         <div class="section__list-item">
-                  Football, programming.
-          </div>
-       </div>
-     </div>
-     </div>
-  </div>
-</div>
+</body>
+</html>
