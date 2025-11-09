@@ -59,25 +59,25 @@
 </div>
 <div class="small row"></div>
     
-    <script type="module">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+<script>
+const text = document.querySelector('.text-xl');
 
-import { createTimeline, stagger, splitText } from 'https://esm.sh/animejs';
-
-const { chars } = splitText('p', {
-  chars: {
-    wrap: 'clip',
-    clone: 'bottom'
-  },
-});
-
-createTimeline()
-.add(chars, {
-  y: '-100%',
-  loop: true,
-  loopDelay: 350,
-  duration: 750,
-  ease: 'inOut(2)',
-}, stagger(150, { from: 'center' }));
-    </script>
-</body>
-</html>
+anime.timeline({loop: true})
+  .add({
+    targets: text,
+    translateY: [-20, 0],
+    opacity: [0, 1],
+    easing: "easeOutExpo",
+    duration: 800,
+    delay: 500
+  })
+  .add({
+    targets: text,
+    translateY: [0, 20],
+    opacity: [1, 0],
+    easing: "easeInExpo",
+    duration: 800,
+    delay: 1000
+  });
+</script>
