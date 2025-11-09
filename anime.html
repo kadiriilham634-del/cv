@@ -36,7 +36,7 @@
     text.innerHTML = text.textContent.split('').map(letter => `<span>${letter}</span>`).join('');
 
     // Animation fluide
-    anime.timeline({loop: true})
+    anime.timeline({ loop: true })
       .add({
         targets: '.text span',
         translateY: [-40, 0],
@@ -54,5 +54,6 @@
         delay: anime.stagger(100)
       });
   </script>
+
 </body>
 </html>
