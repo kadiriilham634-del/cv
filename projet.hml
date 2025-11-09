@@ -1,83 +1,67 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Anime.js Form Example</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-            background-color: #f4f4f9;
-        }
-        form {
-            background: #fff;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
-        input, button {
-            display: block;
-            width: 100%;
-            margin-bottom: 15px;
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-        }
-        button {
-            background-color: #007BFF;
-            color: white;
-            border: none;
-            cursor: pointer;
-        }
-        button:hover {
-            background-color: #0056b3;
-        }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Animation avec Anime.js</title>
 
-.docs-demo.is-active #text-splittext-textsplitter-settings-accessible .docs-demo-template {
-  opacity: 0;
-}
+  <style>
+    html, body {
+      height: 100%;
+      margin: 0;
+    }
 
-#text-splittext-textsplitter-settings-accessible .large.row {
-  perspective: 600px;
-}
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: #f4f4f9;
+      font-family: Arial, Helvetica, sans-serif;
+    }
 
-#text-splittext-textsplitter-settings-accessible .text-xl {
-  transform-style: preserve-3d;
-}
-
-    </style>
+    .texte {
+      font-size: clamp(32px, 6vw, 60px);
+      font-weight: bold;
+      color: #333;
+    }
+  </style>
 </head>
-<body>
-    
-<div class="large centered row">
-  <p class="text-xl">Split and clone text.</p>
-</div>
-<div class="small row"></div>
-    
-<script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
-<script>
-const text = document.querySelector('.text-xl');
 
-anime.timeline({loop: true})
-  .add({
-    targets: text,
-    translateY: [-20, 0],
-    opacity: [0, 1],
-    easing: "easeOutExpo",
-    duration: 800,
-    delay: 500
-  })
-  .add({
-    targets: text,
-    translateY: [0, 20],
-    opacity: [1, 0],
-    easing: "easeInExpo",
-    duration: 800,
-    delay: 1000
-  });
-</script>
+<body>
+  <div class="texte">Bonjour le monde</div>
+
+  <!-- Import classique d’Anime.js depuis un CDN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+
+  <script>
+    // On attend que la page soit bien chargée
+    window.addEventListener('DOMContentLoaded', () => {
+      const el = document.querySelector('.texte');
+
+      // Création d’une animation simple et fluide
+      anime.timeline({ loop: true })
+        .add({
+          targets: el,
+          translateY: [-30, 0],
+          opacity: [0, 1],
+          duration: 800,
+          easing: 'easeOutExpo'
+        })
+        .add({
+          targets: el,
+          scale: [1, 1.1],
+          duration: 1000,
+          easing: 'easeInOutSine'
+        })
+        .add({
+          targets: el,
+          translateY: [0, 30],
+          opacity: [1, 0],
+          duration: 800,
+          easing: 'easeInExpo',
+          delay: 500
+        });
+    });
+  </script>
+</body>
+</html>
