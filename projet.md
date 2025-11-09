@@ -1,7 +1,83 @@
-# Mon projet : animation web avec Anime.js
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Anime.js Form Example</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f4f4f9;
+        }
+        form {
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        input, button {
+            display: block;
+            width: 100%;
+            margin-bottom: 15px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        button {
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
 
-Pour ce projet, j’ai décidé de faire une animation sur une page web avec Anime.js.  
-Mon idée, c’est de réaliser une page très simple, avec un mot ou une phrase qui bouge un peu.  
-Le texte pourrait apparaître, se déplacer légèrement ou changer de couleur, juste pour donner un effet plus vivant.  
-J’utiliserai du HTML et du CSS pour construire la page et la mettre en forme, puis un peu de JavaScript avec Anime.js 
-pour les effets. 
+.docs-demo.is-active #text-splittext-textsplitter-settings-accessible .docs-demo-template {
+  opacity: 0;
+}
+
+#text-splittext-textsplitter-settings-accessible .large.row {
+  perspective: 600px;
+}
+
+#text-splittext-textsplitter-settings-accessible .text-xl {
+  transform-style: preserve-3d;
+}
+
+    </style>
+</head>
+<body>
+    
+<div class="large centered row">
+  <p class="text-xl">Split and clone text.</p>
+</div>
+<div class="small row"></div>
+    
+    <script type="module">
+
+import { createTimeline, stagger, splitText } from 'https://esm.sh/animejs';
+
+const { chars } = splitText('p', {
+  chars: {
+    wrap: 'clip',
+    clone: 'bottom'
+  },
+});
+
+createTimeline()
+.add(chars, {
+  y: '-100%',
+  loop: true,
+  loopDelay: 350,
+  duration: 750,
+  ease: 'inOut(2)',
+}, stagger(150, { from: 'center' }));
+    </script>
+</body>
+</html>
