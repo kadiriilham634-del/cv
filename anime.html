@@ -1,10 +1,9 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Animation Anime.js</title>
-
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Animation avec Anime.js</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -16,7 +15,7 @@
       background-color: #f4f4f9;
     }
 
-    p {
+    p.text {
       font-size: 40px;
       font-weight: bold;
       color: #333;
@@ -27,18 +26,37 @@
 
   <p class="text">Split and clone text.</p>
 
-  <!-- Anime.js depuis CDN (compatible GitHub Pages) -->
- <!-- Anime.js depuis CDN (compatible GitHub Pages) -->
-<script src="anime.min.js"></script>
-<script>
-anime({
-  targets: 'body',
-  backgroundColor: ['#f4f4f9', '#ffb6c1', '#f4f4f9'],
-  duration: 3000,
-  easing: 'easeInOutQuad',
-  loop: true
-});
-</script>
+  <!-- Anime.js (local) -->
+  <script src="anime.min.js"></script>
 
+  <script>
+    // Sélection du texte
+    const text = document.querySelector('.text');
+
+    // Découper le texte en lettres
+    text.innerHTML = text.textContent
+      .split('')
+      .map(letter => `<span>${letter}</span>`)
+      .join('');
+
+    // Animation fluide
+    anime.timeline({ loop: true })
+      .add({
+        targets: '.text span',
+        translateY: [-40, 0],
+        opacity: [0, 1],
+        easing: 'easeOutExpo',
+        duration: 700,
+        delay: anime.stagger(100)
+      })
+      .add({
+        targets: '.text span',
+        translateY: [0, 40],
+        opacity: [1, 0],
+        easing: 'easeInExpo',
+        duration: 700,
+        delay: anime.stagger(100)
+      });
+  </script>
 </body>
 </html>
