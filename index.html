@@ -42,38 +42,15 @@
             width: 30%;
             background-color: var(--sidebar-bg);
             color: var(--accent-color);
-            padding: 50px 25px; /* plus d’espace */
+            padding: 50px 25px;
             box-sizing: border-box;
             text-align: right;
             position: relative;
             z-index: 2;
         }
 
-        .name-vertical {
-            position: absolute;
-            top: 50%;
-            left: 0;
-            transform: translateY(-50%) rotate(-90deg);
-            transform-origin: left bottom;
-            white-space: nowrap;
-            font-size: 2.2em;
-            font-weight: 700;
-            letter-spacing: 5px;
-            color: var(--accent-color);
-            z-index: 1;
-            padding-left: 10px;
-        }
-
-        .name-vertical span {
-            display: block;
-        }
-
-        .name-vertical .first-name {
-            font-weight: 300;
-        }
-
         .sidebar-section {
-            margin-bottom: 40px; /* plus d’air entre chaque section */
+            margin-bottom: 40px;
         }
 
         .sidebar-section h2 {
@@ -93,7 +70,7 @@
         }
 
         .sidebar-list li {
-            margin-bottom: 10px; /* léger espacement entre lignes */
+            margin-bottom: 10px;
         }
 
         .language-item {
@@ -133,12 +110,32 @@
         /* --- Contenu principal droit --- */
         .main-content-right {
             width: 70%;
-            padding: 50px 40px; /* plus d’espace sur les bords */
+            padding: 50px 40px;
             box-sizing: border-box;
         }
 
+        /* --- Nom en haut --- */
+        .header-name {
+            text-align: left;
+            margin-bottom: 35px;
+        }
+
+        .header-name h1 {
+            font-size: 2.2em;
+            font-weight: 700;
+            color: var(--header-color);
+            margin: 0;
+            letter-spacing: 1px;
+        }
+
+        .header-name h1 span {
+            font-weight: 300;
+            text-transform: uppercase;
+        }
+
+        /* --- Sections principales --- */
         .main-section {
-            margin-bottom: 45px; /* plus d’espace entre les blocs */
+            margin-bottom: 45px;
         }
 
         .main-section h2 {
@@ -199,11 +196,6 @@
 <body>
     <div class="cv-page">
         
-        <div class="name-vertical">
-            <span class="first-name">ILHAM</span>
-            <span>EL KADIRI</span>
-        </div>
-
         <div class="sidebar-left">
             
             <div class="sidebar-section">
@@ -249,6 +241,10 @@
         </div>
 
         <div class="main-content-right">
+
+            <div class="header-name">
+                <h1>ILHAM <strong>EL KADIRI</span></h1>
+            </div>
 
             <div class="main-section objective">
                 <h2>OBJECTIF</h2>
