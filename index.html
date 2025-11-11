@@ -4,25 +4,28 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CV - Ilham El Kadiri</title>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 
     <style>
         :root {
-            --sidebar-bg: #000000;
-            --main-text-color: #333333;
-            --header-color: #000000;
-            --light-text-color: #555555;
-            --accent-color: #ffffff;
-            --font-family: 'Roboto', sans-serif;
+            --primary-bg: #FFFFFF;
+            --secondary-bg: #ffffff; /* Gris très clair pour la colonne gauche */
+            --text-dark: #333333;
+            --text-light: #666666;
+            --accent-color: #0077B6; /* Nouveau bleu pétrole professionnel */
+            --header-line-color: #D0D0D0;
+            --font-main: 'Roboto', sans-serif;
+            --font-secondary: 'Open Sans', sans-serif;
         }
 
         body {
-            font-family: var(--font-family);
+            font-family: var(--font-secondary);
             line-height: 1.6;
-            color: var(--main-text-color);
-            margin: 0;
+            color: var(--text-dark);
+            margin: 0;s
             padding: 40px 0;
-            background-color: #f4f4f4;
+            background-color: #f0f0f0;
             display: flex;
             justify-content: center;
         }
@@ -30,163 +33,329 @@
         .cv-page {
             width: 210mm;
             min-height: 297mm;
-            display: flex;
-            background-color: #fff;
+            background-color: var(--primary-bg);
             box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
-            overflow: visible;
-            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
         }
 
-        /* --- Barre latérale gauche --- */
-        .sidebar-left {
-            width: 30%;
-            background-color: var(--sidebar-bg);
-            color: var(--accent-color);
-            padding: 50px 25px;
-            box-sizing: border-box;
-            text-align: right;
-            position: relative;
-            z-index: 2;
+        /* --- En-tête global --- */
+        .global-header {
+            background-color: var(--secondary-bg);
+            padding: 25px 40px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
         }
 
-        .sidebar-section {
-            margin-bottom: 40px;
-        }
-
-        .sidebar-section h2 {
-            font-size: 1.1em;
-            font-weight: 700;
-            text-transform: uppercase;
-            margin-bottom: 15px;
-            padding-bottom: 5px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.3);
-        }
-
-        .sidebar-list {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-            font-size: 0.9em;
-        }
-
-        .sidebar-list li {
-            margin-bottom: 10px;
-        }
-
-        .language-item {
-            margin-bottom: 15px;
-        }
-
-        .language-item h3 {
-            font-size: 0.95em;
-            font-weight: 400;
-            margin: 0 0 5px 0;
-            text-transform: uppercase;
-        }
-
-        .language-bar {
-            width: 100%;
-            background-color: rgba(255, 255, 255, 0.2);
-            height: 5px;
-            border-radius: 3px;
-        }
-
-        .language-level {
-            height: 100%;
-            background-color: var(--accent-color);
-            border-radius: 3px;
-        }
-
-        .contact-details p {
-            font-size: 0.9em;
-            margin: 0 0 5px 0;
-        }
-
-        .contact-details a {
-            color: var(--accent-color);
-            text-decoration: none;
-        }
-
-        /* --- Contenu principal droit --- */
-        .main-content-right {
-            width: 70%;
-            padding: 50px 40px;
-            box-sizing: border-box;
-        }
-
-        /* --- Nom en haut --- */
-        .header-name {
-            text-align: left;
-            margin-bottom: 35px;
+        .header-left {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
         }
 
         .header-name h1 {
-            font-size: 2.2em;
+            font-family: var(--font-main);
+            font-size: 2.5em;
             font-weight: 700;
-            color: var(--header-color);
+            color: var(--text-dark);
             margin: 0;
-            letter-spacing: 1px;
         }
 
-        .header-name h1 span {
+        .header-name h1 strong {
             font-weight: 300;
-            text-transform: uppercase;
         }
 
-        /* --- Sections principales --- */
-        .main-section {
-            margin-bottom: 45px;
+        .header-title {
+            font-size: 1.1em;
+            font-weight: 400;
+            color: var(--text-light);
+            margin-top: 5px;
         }
 
-        .main-section h2 {
-            font-size: 1.5em;
-            font-weight: 700;
-            color: var(--header-color);
-            text-transform: uppercase;
-            margin-bottom: 20px;
-            padding-bottom: 5px;
-            border-bottom: 2px solid var(--header-color);
+        .header-illustration {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background-color: var(--accent-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
         }
 
-        .objective p {
-            font-size: 1em;
-            font-style: italic;
+        .header-illustration .fa {
+            font-size: 3.5em;
+            color: #fff;
+        }
+
+        /* --- Corps principal --- */
+        .cv-body {
+            display: flex;
+            flex-direction: row;
+            height: 100%;
+            flex-grow: 1;
+        }
+
+        /* Colonne gauche (30%) - Informations secondaires */
+        .left-column {
+            width: 35%; /* 30% */
+            padding: 40px 30px;
+            box-sizing: border-box;
+            background-color: var(--secondary-bg);
+            border-right: 1px solid var(--header-line-color);
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+        }
+        
+        /* Suppression des marges forcées */
+        .objective-content {
+            margin-bottom: 30px; 
+        }
+
+        .objective-content p {
+            font-size: 0.9em;
+            color: var(--text-dark);
+            text-align: left;
             margin: 0;
         }
 
-        .item {
-            margin-bottom: 25px;
+        .contact-section {
+            margin-bottom: 30px; 
         }
 
-        .item-title {
-            font-size: 1.1em;
+        .contact-section h2 {
+            font-family: var(--font-main);
+            font-size: 1em;
             font-weight: 700;
-            color: var(--header-color);
-            margin: 0 0 5px 0;
+            text-transform: uppercase;
+            margin-bottom: 15px;
+            color: var(--text-dark);
+            position: relative;
         }
 
-        .item-subtitle {
-            font-size: 0.95em;
+        .contact-section h2::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            bottom: -5px;
+            width: 50px;
+            height: 2px;
+            background-color: var(--accent-color);
+        }
+
+        /* CORRECTION 1: Alignement de l'icône de contact et du texte */
+        .contact-item {
+            display: flex;
+            align-items: center; /* Aligne verticalement au centre */
+            margin-bottom: 10px;
+            font-size: 0.85em;
+            color: var(--text-dark);
+            flex-wrap: wrap;
+        }
+
+        .contact-item .icon {
+            width: 20px;
+            height: 20px;
+            border-radius: 0%;
+            background-color: var(--accent-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 10px;
+            flex-shrink: 0;
+            /* Pas besoin de vertical-align, flexbox gère mieux */
+        }
+
+        .contact-item .icon .fa {
+            color: var(--primary-bg);
+            font-size: 0.7em;
+            line-height: 1; /* Assure que l'icône est centrée verticalement dans son conteneur */
+        }
+
+        .contact-item a,
+        .contact-item span {
+            color: var(--text-dark);
+            text-decoration: none;
+            word-break: break-word;
+            overflow-wrap: break-word;
+            /* Assure que le texte prend la ligne entière et ne déborde pas si l'email est long */
+            flex-basis: calc(100% - 30px); /* 30px = icon width + margin */
+        }
+
+        /* Barres de compétences/langues */
+        .skill-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .skill-item h3 {
+            font-size: 0.85em;
             font-weight: 400;
-            color: var(--light-text-color);
+            color: var(--text-dark);
+            width: 80px;
+            margin: 0;
+            flex-shrink: 0;
+        }
+
+        .skill-bar-container {
+            flex-grow: 1;
+            height: 5px;
+            background-color: var(--header-line-color);
+            border-radius: 3px;
+            margin-left: 10px;
+            overflow: hidden;
+        }
+
+        .skill-bar {
+            height: 100%;
+            background-color: var(--accent-color);
+        }
+
+        /* Colonne droite (70%) - Formations et Expériences */
+        .right-column {
+            width: 70%; /* 70% */
+            padding: 40px;
+            box-sizing: border-box;
+            background-color: var(--primary-bg);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .section-title {
+            font-family: var(--font-main);
+            font-size: 1.6em;
+            font-weight: 700;
+            text-transform: uppercase;
+            margin-bottom: 25px;
+            color: var(--text-dark);
+            position: relative;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            bottom: -5px;
+            width: 80px;
+            height: 4px;
+            background-color: var(--accent-color);
+        }
+
+        .section-block {
+            margin-bottom: 40px;
+        }
+
+        /* Chronologie pour la colonne de droite */
+        .item {
+            margin-bottom: 25px; /* Légèrement réduit l'espace entre les éléments */
+            display: flex;
+            position: relative;
+            padding-left: 15px;
+            align-items: flex-start;
+        }
+
+        /* Style de la ligne de temps */
+        .item::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 5px;
+            bottom: -30px; 
+            width: 2px;
+            background-color: var(--header-line-color);
+        }
+        .item:last-child::before {
+            bottom: 5px;
+        }
+        .item::after {
+            content: '';
+            position: absolute;
+            left: -3px;
+            top: 8px;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: var(--accent-color);
+            z-index: 1;
+        }
+
+        /* CORRECTION 2: Réduction de l'espace entre l'année et le contenu */
+        .item-date {
+            width: 80px; /* Réduit la largeur pour rapprocher */
+            font-size: 0.85em;
+            font-weight: 600;
+            color: var(--text-light); 
+            flex-shrink: 0;
+            padding-right: 10px; /* Réduit le padding */
+            position: relative;
+            left: 15px; /* Ajuste la position par rapport au point */
+            top: 0;
+        }
+
+        .item-content {
+            flex-grow: 1;
+            padding-left: 5px; /* Réduit le padding pour rapprocher */
+            margin-left: 65px; /* Réduit le margin-left en conséquence */
+            margin-top: -5px; 
+        }
+
+        .item-content h3 {
+            font-size: 1.1em;
+            font-weight: 600;
+            color: var(--text-dark);
             margin: 0 0 5px 0;
         }
 
-        ul {
+        .item-content p {
+            font-size: 0.9em;
+            color: var(--text-light);
+            margin: 0;
+        }
+
+        .item-content ul {
             list-style: disc;
             padding-left: 20px;
             margin: 5px 0 0 0;
             font-size: 0.9em;
+            color: var(--text-light);
         }
 
-        li {
-            margin-bottom: 4px;
+        .item-content ul li {
+            margin-bottom: 5px;
+        }
+
+        /* Centres d'intérêt */
+        .hobbies-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .hobbies-list li {
+            font-size: 0.9em;
+            color: var(--text-dark);
+            margin-bottom: 8px;
+            position: relative;
+            padding-left: 20px;
+        }
+
+        .hobbies-list li::before {
+            content: "\f006";
+            font-family: 'FontAwesome';
+            position: absolute;
+            left: 0;
+            color: var(--accent-color);
+            font-size: 0.8em;
+            top: 2px;
         }
 
         @media print {
             .cv-page {
-                height: auto !important;
-                overflow: visible !important;
+                height: 297mm;
                 box-shadow: none;
             }
         }
@@ -195,116 +364,146 @@
 
 <body>
     <div class="cv-page">
-        
-        <div class="sidebar-left">
+
+        <div class="global-header">
+            <div class="header-left">
+                <div class="header-name">
+                    <h1>ILHAM EL KADIRI</strong></h1> 
+                </div>
+                <div class="header-title">Étudiante en Master Numérique, Édition et Technologies (NET)</div>
+            </div>
             
-            <div class="sidebar-section">
-                <h2>COMPÉTENCES</h2>
-                <ul class="sidebar-list">
-                    <li>Photoshop</li>
-                    <li>Illustrator</li>
-                    <li>Indesign</li>
-                    <li>Canva</li>
-                </ul>
-            </div>
-
-            <div class="sidebar-section">
-                <h2>CENTRES D'INTÉRÊT</h2>
-                <ul class="sidebar-list">
-                    <li>Mode</li>
-                    <li>Photographie</li>
-                    <li>Dessin</li>
-                    <li>Musique</li>
-                </ul>
-            </div>
-
-            <div class="sidebar-section">
-                <h2>LANGUES</h2>
-                <div class="language-item">
-                    <h3>Français</h3>
-                    <div class="language-bar"><div class="language-level" style="width: 100%;"></div></div>
-                </div>
-                <div class="language-item">
-                    <h3>Anglais</h3>
-                    <div class="language-bar"><div class="language-level" style="width: 75%;"></div></div>
-                </div>
-                <div class="language-item">
-                    <h3>Arabe</h3>
-                    <div class="language-bar"><div class="language-level" style="width: 100%;"></div></div>
-                </div>
-            </div>
-
-            <div class="sidebar-section contact-details">
-                <h2>COORDONNÉES</h2>
-                <p>07 68 79 50 97</p>
-                <p><a href="mailto:kadiriilham634@gmail.com">kadiriilham634@gmail.com</a></p>
-            </div>
         </div>
 
-        <div class="main-content-right">
+        <div class="cv-body">
 
-            <div class="header-name">
-                <h1>ILHAM <strong>EL KADIRI</span></h1>
-            </div>
-
-            <div class="main-section objective">
-                <h2>OBJECTIF</h2>
-                <p>Acquérir une expérience professionnelle enrichissante tout en développant mes compétences dans le domaine du numérique et de la communication.</p>
-            </div>
-
-            <div class="main-section education">
-                <h2>FORMATION</h2>
-
-                <div class="item">
-                    <h3 class="item-title">Master 1 Numérique, Édition et Technologies (Master NET)</h3>
-                    <p class="item-subtitle"><em>En cours</em> – Université Paris 8 Vincennes–Saint-Denis | 2025 – 2026</p>
+            <div class="left-column">
+                <div class="contact-section objective-content">
+                    <h2>OBJECTIF</h2>
+                    <p>Acquérir une expérience professionnelle enrichissante tout en développant mes compétences dans le domaine du numérique et de la communication.</p>
                 </div>
 
-                <div class="item">
-                    <h3 class="item-title">Master 1 Médiation culturelle, patrimoine et numérique</h3>
-                    <p class="item-subtitle">Université Paris Nanterre | 2024 – 2025</p>
+                <div class="contact-section">
+                    <h2>Contact</h2>
+                    <div class="contact-item">
+                        <span class="icon"><i class="fa fa-phone"></i></span>
+                        <span>07 68 79 50 97</span>
+                    </div>
+                    <div class="contact-item">
+                        <span class="icon"><i class="fa fa-envelope"></i></span>
+                        <a href="mailto:kadiriilham634@gmail.com">kadiriilham634@gmail.com</a>
+                    </div>
+                    <div class="contact-item">
+                        <span class="icon"><i class="fa fa-map-marker"></i></span>
+                        <span>Paris, France</span>
+                    </div>
                 </div>
 
-                <div class="item">
-                    <h3 class="item-title">Licence Arts Plastiques</h3>
-                    <p class="item-subtitle">Université Paris 8 Saint-Denis | 2020 – 2023</p>
+                <div class="contact-section">
+                    <h2>Langues</h2>
+                    <div class="skill-item">
+                        <h3>Français</h3>
+                        <div class="skill-bar-container"><div class="skill-bar" style="width:100%;"></div></div>
+                    </div>
+                    <div class="skill-item">
+                        <h3>Arabe</h3>
+                        <div class="skill-bar-container"><div class="skill-bar" style="width:95%;"></div></div>
+                    </div>
+                    <div class="skill-item">
+                        <h3>Anglais</h3>
+                        <div class="skill-bar-container"><div class="skill-bar" style="width:75%;"></div></div>
+                    </div>
                 </div>
 
-                <div class="item">
-                    <h3 class="item-title">Baccalauréat Professionnel Gestion-Administration</h3>
-                    <p class="item-subtitle">Lycée des Métiers Lavoisier – Méru | 2020</p>
+                <div class="contact-section">
+                    <h2>Compétences Techniques</h2>
+                    <div class="skill-item"><h3>Canva</h3><div class="skill-bar-container"><div class="skill-bar" style="width:100%;"></div></div></div>
+                    <div class="skill-item"><h3>Photoshop</h3><div class="skill-bar-container"><div class="skill-bar" style="width:95%;"></div></div></div>
+                    <div class="skill-item"><h3>Illustrator</h3><div class="skill-bar-container"><div class="skill-bar" style="width:90%;"></div></div></div>
+                    <div class="skill-item"><h3>Indesign</h3><div class="skill-bar-container"><div class="skill-bar" style="width:80%;"></div></div></div>
+                    <div class="skill-item"><h3>HTML / CSS</h3><div class="skill-bar-container"><div class="skill-bar" style="width:65%;"></div></div></div>
                 </div>
-            </div>
 
-            <div class="main-section experience">
-                <h2>EXPÉRIENCES PROFESSIONNELLES</h2>
-
-                <div class="item">
-                    <h3 class="item-title">Conseillère de vente – Chaussures</h3>
-                    <p class="item-subtitle">EDEN SHOES | Juin - Août 2024</p>
-                    <ul>
-                        <li>Accueil et accompagnement des clients dans leurs achats</li>
-                        <li>Mise en valeur des produits (merchandising, réassort, présentation vitrine)</li>
-                        <li>Gestion des encaissements et suivi du stock</li>
+                <div class="contact-section">
+                    <h2>Centres d'intérêt</h2>
+                    <ul class="hobbies-list">
+                        <li>Mode</li>
+                        <li>Photographie</li>
+                        <li>Dessin</li>
+                        <li>Musique</li>
                     </ul>
                 </div>
+            </div>
 
-                <div class="item">
-                    <h3 class="item-title">Photographe vendeuse</h3>
-                    <p class="item-subtitle">PHOENIX PHOTO | Mai - Juin 2023</p>
-                    <ul>
-                        <li>Accueil des clients et prise de vues en studio</li>
-                        <li>Retouche, impression et vente des photos</li>
-                    </ul>
+            <div class="right-column">
+                <div class="section-block">
+                    <h2 class="section-title">Formations</h2>
+                    <div class="item">
+                        <div class="item-date">2025-2026</div>
+                        <div class="item-content">
+                            <h3>Master 1 Numérique, Édition et Technologies (Master NET)</h3>
+                            <p>Université Paris 8 Vincennes–Saint-Denis <strong>(En cours)</strong></p>
+                        </div>
+                    </div>
+                    <div class="item">
+                        <div class="item-date">2024-2025</div>
+                        <div class="item-content">
+                            <h3>Master 1 Médiation culturelle, patrimoine et numérique</h3>
+                            <p>Université Paris Nanterre</p>
+                        </div>
+                    </div>
+                    <div class="item">
+                        <div class="item-date">2020-2023</div>
+                        <div class="item-content">
+                            <h3>Licence Arts Plastiques</h3>
+                            <p>Université Paris 8 Saint-Denis</p>
+                        </div>
+                    </div>
+                    <div class="item">
+                        <div class="item-date">2017-2020</div>
+                        <div class="item-content">
+                            <h3>Baccalauréat Professionnel Gestion-Administration</h3>
+                            <p>Lycée des Métiers Lavoisier – Méru</p>
+                        </div>
+                    </div>
                 </div>
 
-                <div class="item">
-                    <h3 class="item-title">Stagiaire en milieu scolaire</h3>
-                    <p class="item-subtitle">COLLÈGE DU THELLE | Janvier - Juillet 2022</p>
-                    <ul>
-                        <li>Observation et participation aux cours auprès des enseignants</li>
-                        <li>Aide à l’encadrement des élèves et aux activités pédagogiques</li>
-                    </ul>
+                <div class="section-block">
+                    <h2 class="section-title">Expériences Professionnelles</h2>
+                    <div class="item">
+                        <div class="item-date">Juin–Août 2024</div>
+                        <div class="item-content">
+                            <h3>Conseillère de vente – Chaussures</h3>
+                            <p>EDEN SHOES</p>
+                            <ul>
+                                <li>Accueil et accompagnement des clients</li>
+                                <li>Mise en valeur des produits et vitrines</li>
+                                <li>Gestion des encaissements et du stock</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="item">
+                        <div class="item-date">Mai–Juin 2023</div>
+                        <div class="item-content">
+                            <h3>Photographe vendeuse</h3>
+                            <p>PHOENIX PHOTO</p>
+                            <ul>
+                                <li>Accueil des clients et prises de vues en studio</li>
+                                <li>Retouche, impression et vente des photos</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="item">
+                        <div class="item-date">Janv–Juil 2022</div>
+                        <div class="item-content">
+                            <h3>Stagiaire en milieu scolaire</h3>
+                            <p>COLLÈGE DU THELLE</p>
+                            <ul>
+                                <li>Observation et participation aux cours</li>
+                                <li>Aide à l’encadrement et aux activités pédagogiques</li>
+                            </ul>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
