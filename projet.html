@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <title>GAME OVER - Effet Machine à Écrire et Son</title>
     
+    <link rel="icon" href="data:;base64,iVBORw0KGgo=">
+    
     <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
     <script src="https://unpkg.com/tone@14.9.1/build/Tone.js"></script> 
     
@@ -27,12 +29,10 @@
             color: var(--text-color);
         }
 
-        
         .centered {
             display: flex; 
             align-items: baseline; 
         }
-        
         
         .text-xl {
             font-size: 150px; 
@@ -44,12 +44,10 @@
             white-space: nowrap; 
         }
 
-        
         .letter {
             display: inline-block;
             opacity: 0; 
         }
-        
         
         .cursor {
             font-size: 150px; 
@@ -59,15 +57,13 @@
             opacity: 0; 
             text-shadow: 0 0 10px rgba(255, 0, 0, 0.5);
             
-            
+            /* Clignotement géré par CSS */
             animation: blink 1s step-end infinite;
         }
-        
         
         @keyframes blink {
             50% { opacity: 0; }
         }
-
     </style>
 </head>
 <body>
@@ -79,107 +75,102 @@
 
 <script>
     
-    
-    
     document.addEventListener('DOMContentLoaded', () => {
         const textElement = document.getElementById('animatedText');
         const cursor = document.getElementById('cursor');
         
-        
-        const textWrapper = document.querySelector('#animatedText');
-        textWrapper.innerHTML = textWrapper.textContent.replace(/\S/g, "<span class='letter'>$&</span>");
+        // Sépare chaque caractère en un <span> pour permettre l'animation individuelle
+        textElement.innerHTML = textElement.textContent.replace(/\S/g, "<span class='letter'>$&</span>");
 
+        const letters = document.querySelectorAll('#animatedText .letter');
         
+        /**
+         * Démarre la timeline d'animation de frappe en boucle infinie.
+         */
         function startTypingAnimation() {
             
+            // Masque les lettres et le curseur au début de chaque boucle
+            anime.set(letters, { opacity: 0 });
             anime.set(cursor, { opacity: 0 });
-            
-            anime.set('#animatedText .letter', { opacity: 0 });
 
             const typingTimeline = anime.timeline({
                 easing: 'easeInOutQuad',
                 autoplay: true,
-                loop: false,
+                // **La boucle infinie est activée ici**
+                loop: true,
+                loopComplete: (anim) => {
+                    // Réinitialisation des opacités à la fin de la boucle
+                    anime.set(letters, { opacity: 0 });
+                    anime.set(cursor, { opacity: 0 });
+                }
             });
 
-            
+            // 1. Animation de frappe (lettres apparaissent)
             typingTimeline.add({
-                targets: '#animatedText .letter',
+                targets: letters,
                 opacity: 1,
                 duration: 130, 
                 delay: anime.stagger(130),
             })
-            
+            // 2. Le curseur apparaît
             .add({
                 targets: cursor,
                 opacity: 1,
                 duration: 1, 
-                delay: 200, 
-            })
-            
+            }, '+=200') // Démarre 200ms après la fin du typing
+            // 3. Pause avec le curseur clignotant
             .add({
                 duration: 2000, 
-            }, '+=0') 
-            
-            
-            .finished.then(() => {
-                
-                setTimeout(startTypingAnimation, 500); 
-            });
+            }, '+=0'); 
         }
         
         
+        /**
+         * Crée les synthétiseurs, les boucles et démarre le Transport de Tone.js.
+         */
         async function startToneMusic() {
-            
-            await Tone.start();
-            console.log("Audio Context Started");
-            
-            
-            
-            
-            
             
             const synthA = new Tone.FMSynth().toDestination();
             const synthB = new Tone.AMSynth().toDestination();
             
-            
+            // Boucle 1
             const loopA = new Tone.Loop((time) => {
                 synthA.triggerAttackRelease("C2", "8n", time);
             }, "4n").start(0);
             
-            
+            // Boucle 2 (décalée)
             const loopB = new Tone.Loop((time) => {
                 synthB.triggerAttackRelease("C4", "8n", time);
             }, "4n").start("8n");
             
-            
+            // Démarrage et accélération du tempo
             Tone.getTransport().start();
-            
-            
             Tone.getTransport().bpm.rampTo(800, 10);
-            
-            
         }
         
         
+        let soundStarted = false;
         
+        // **L'animation visuelle DÉMARRE IMMÉDIATEMENT au chargement**
+        startTypingAnimation();
         
-        
-        
-        let started = false;
-        
-        document.body.addEventListener('click', () => {
-            if (!started) {
-                startTypingAnimation();
+        // **Le gestionnaire de clic est MAINTENU UNIQUEMENT pour le son**
+        document.body.addEventListener('click', async () => {
+            if (!soundStarted) {
+                // Nécessaire pour les navigateurs : démarre l'AudioContext lors de l'interaction
+                await Tone.start(); 
+                console.log("Audio Context Started");
+                
+                // Démarre la musique
                 startToneMusic();
-                started = true;
+                
+                soundStarted = true;
             }
         }, { once: true }); 
         
         
-        if (!started) {
-             console.log("Cliquez n'importe où sur la page pour démarrer l'animation et le son !");
-             
+        if (!soundStarted) {
+            console.log("Cliquez n'importe où sur la page pour démarrer le son !");
         }
 
     });
