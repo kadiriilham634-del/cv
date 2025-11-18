@@ -2,8 +2,10 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <title>GAME OVER - Effet Machine à Écrire</title>
+    <title>GAME OVER - Effet Machine à Écrire et Son</title>
+    
     <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+    <script src="https://unpkg.com/tone@14.9.1/build/Tone.js"></script> 
     
     <link href="https://fonts.googleapis.com/css2?family=Anton&display=swap" rel="stylesheet">
     
@@ -57,9 +59,10 @@
             opacity: 0; 
             text-shadow: 0 0 10px rgba(255, 0, 0, 0.5);
             
-           
+            
             animation: blink 1s step-end infinite;
         }
+        
         
         @keyframes blink {
             50% { opacity: 0; }
@@ -75,6 +78,9 @@
 </div>
 
 <script>
+    
+    
+    
     document.addEventListener('DOMContentLoaded', () => {
         const textElement = document.getElementById('animatedText');
         const cursor = document.getElementById('cursor');
@@ -122,7 +128,60 @@
             });
         }
         
-        startTypingAnimation();
+        
+        async function startToneMusic() {
+            
+            await Tone.start();
+            console.log("Audio Context Started");
+            
+            
+            
+            
+            
+            
+            const synthA = new Tone.FMSynth().toDestination();
+            const synthB = new Tone.AMSynth().toDestination();
+            
+            
+            const loopA = new Tone.Loop((time) => {
+                synthA.triggerAttackRelease("C2", "8n", time);
+            }, "4n").start(0);
+            
+            
+            const loopB = new Tone.Loop((time) => {
+                synthB.triggerAttackRelease("C4", "8n", time);
+            }, "4n").start("8n");
+            
+            
+            Tone.getTransport().start();
+            
+            
+            Tone.getTransport().bpm.rampTo(800, 10);
+            
+            
+        }
+        
+        
+        
+        
+        
+        
+        let started = false;
+        
+        document.body.addEventListener('click', () => {
+            if (!started) {
+                startTypingAnimation();
+                startToneMusic();
+                started = true;
+            }
+        }, { once: true }); 
+        
+        
+        if (!started) {
+             console.log("Cliquez n'importe où sur la page pour démarrer l'animation et le son !");
+             
+        }
+
     });
 </script>
 
