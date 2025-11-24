@@ -1,180 +1,467 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <title>GAME OVER - Effet Machine à Écrire et Son</title>
-    
-    <link rel="icon" href="data:;base64,iVBORw0KGgo=">
-    
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
-    <script src="https://unpkg.com/tone@14.9.1/build/Tone.js"></script> 
-    
-    <link href="https://fonts.googleapis.com/css2?family=Anton&display=swap" rel="stylesheet">
-    
-    <style>
-        :root {
-            --text-color: #ff0000; 
-            --bg-color: #111;
-        }
-        
-        body {
-            background-color: var(--bg-color);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            margin: 0;
-            overflow: hidden;
-            font-family: 'Anton', sans-serif;
-            color: var(--text-color);
-        }
+  <meta charset="UTF-8">
+  <title>RED SHOOTER - Arcade</title>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+  
+  <script src="https://unpkg.com/tone@14.7.58/build/Tone.js"></script>
 
-        .centered {
-            display: flex; 
-            align-items: baseline; 
-        }
-        
-        .text-xl {
-            font-size: 150px; 
-            font-weight: 700;
-            line-height: 1.2;
-            text-transform: uppercase;
-            text-shadow: 0 0 10px rgba(255, 0, 0, 0.5);
-            margin: 0;
-            white-space: nowrap; 
-        }
+  <style>
+    /* STYLES CSS */
+    :root {
+      --bg: #000;
+      --red: #ff0000;
+      --dark-red: #440000;
+    }
 
-        .letter {
-            display: inline-block;
-            opacity: 0; 
-        }
-        
-        .cursor {
-            font-size: 150px; 
-            line-height: 1.2;
-            font-weight: 100; 
-            display: inline-block;
-            opacity: 0; 
-            text-shadow: 0 0 10px rgba(255, 0, 0, 0.5);
-            
-            /* Clignotement géré par CSS */
-            animation: blink 1s step-end infinite;
-        }
-        
-        @keyframes blink {
-            50% { opacity: 0; }
-        }
-    </style>
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      background: var(--bg);
+      font-family: 'Press Start 2P', monospace;
+      color: var(--red);
+      overflow: hidden;
+      position: relative;
+    }
+
+    body::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: repeating-linear-gradient(
+        to bottom,
+        rgba(255, 0, 0, 0.05) 0px,
+        rgba(255, 0, 0, 0.02) 2px,
+        rgba(0, 0, 0, 0.25) 3px
+      );
+      pointer-events: none;
+    }
+
+    #game {
+      width: 600px;
+      height: 600px;
+      border: 3px solid var(--red);
+      box-shadow: 0 0 25px var(--red);
+      position: relative;
+      overflow: hidden;
+      background: #000;
+    }
+
+    #player {
+      width: 30px;
+      height: 30px;
+      background: var(--red);
+      position: absolute;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      box-shadow: 0 0 10px var(--red);
+    }
+
+    .enemy {
+      width: 30px;
+      height: 30px;
+      background: var(--dark-red);
+      border: 2px solid var(--red);
+      position: absolute;
+      top: -40px;
+      box-shadow: 0 0 10px var(--red);
+    }
+
+    .bullet {
+      width: 6px;
+      height: 15px;
+      background: var(--red);
+      position: absolute;
+      box-shadow: 0 0 8px var(--red);
+    }
+
+    #hud {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      font-size: 14px;
+      text-shadow: 0 0 8px var(--red);
+    }
+
+    #hint {
+      margin-top: 15px;
+      font-size: 14px;
+      opacity: 0.9;
+      color: var(--red);
+      text-shadow: 0 0 8px var(--red);
+      pointer-events: none;
+    }
+
+    #gameOverOverlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.9);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.4s;
+      text-align: center;
+    }
+
+    #gameOverOverlay.show {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    
+    /* ÉCRAN DE DÉMARRAGE AUDIO */
+    #audioGate {
+      position: absolute;
+      inset: 0;
+      background: #000;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 20px;
+      text-shadow: 0 0 10px var(--red);
+      z-index: 100;
+      cursor: pointer;
+    }
+
+    #gameOverOverlay h1 {
+      margin: 0 0 20px;
+      font-size: 40px;
+      text-shadow: 0 0 15px var(--red);
+    }
+
+    #gameOverOverlay p {
+      margin: 5px 0;
+      font-size: 14px;
+    }
+
+    #finalScore {
+      margin-top: 15px;
+      font-size: 18px;
+    }
+
+    @keyframes shake {
+      0% { transform: translate(0,0); }
+      25% { transform: translate(4px,-4px); }
+      50% { transform: translate(-4px,4px); }
+      75% { transform: translate(4px,4px); }
+      100% { transform: translate(0,0); }
+    }
+
+    .shake {
+      animation: shake 0.25s;
+    }
+  </style>
 </head>
 <body>
 
-<div class="centered">
-    <p id="animatedText" class="text-xl">GAME OVER</p>
-    <span id="cursor" class="cursor">|</span>
-</div>
+  <div id="game">
+    <div id="audioGate">
+        CLICK TO START
+    </div>
 
-<script>
+    <div id="player"></div>
+
+    <div id="hud">
+      SCORE: <span id="score">0</span>
+    </div>
+
+    <div id="gameOverOverlay">
+      <h1>GAME OVER</h1>
+      <p>CLICK TO RESTART</p>
+      <div id="finalScore"></div>
+    </div>
+  </div>
+
+  <div id="hint">
+    ARROWS TO MOVE · SPACE TO SHOOT
+  </div>
+
+  <script>
+    const game = document.getElementById('game');
+    const player = document.getElementById('player');
+    const scoreEl = document.getElementById('score');
+    const overlay = document.getElementById('gameOverOverlay'); 
+    const audioGate = document.getElementById('audioGate'); 
+    const finalScoreEl = document.getElementById('finalScore');
+
+    // -----------------------------------------------------------
+    // 🎶 DÉCLARATIONS TONE.JS
+    // -----------------------------------------------------------
+
+    // 1. Musique de fond (Synthétiseur Arpégié)
+    const synth = new Tone.Synth({
+        oscillator: { type: "square" }, 
+        envelope: { attack: 0.005, decay: 0.1, sustain: 0.3, release: 0.5 },
+        volume: -10 
+    }).toDestination();
+
+    const notes = ["D4", "F4", "A4", "C5", "D5", "F5", "A5", "C6"]; 
+
+    const arp = new Tone.Pattern((time, note) => {
+        synth.triggerAttackRelease(note, "16n", time);
+    }, notes, "upDown"); 
+
+    // 2. Son d'explosion : CORRIGÉ pour utiliser un NoiseSynth interne
+    const explosionSynth = new Tone.NoiseSynth({
+        noise: {
+            type: "white" // Bruit blanc (similaire à une explosion rapide)
+        },
+        envelope: {
+            attack: 0.005, 
+            decay: 0.1,  
+            sustain: 0.0,
+            release: 0.1
+        },
+        volume: -5
+    }).toDestination();
     
-    document.addEventListener('DOMContentLoaded', () => {
-        const textElement = document.getElementById('animatedText');
-        const cursor = document.getElementById('cursor');
-        
-        // Sépare chaque caractère en un <span> pour permettre l'animation individuelle
-        textElement.innerHTML = textElement.textContent.replace(/\S/g, "<span class='letter'>$&</span>");
+    // 3. État du contexte audio
+    let isToneStarted = false; 
 
-        const letters = document.querySelectorAll('#animatedText .letter');
-        
-        /**
-         * Démarre la timeline d'animation de frappe en boucle infinie.
-         */
-        function startTypingAnimation() {
-            
-            // Masque les lettres et le curseur au début de chaque boucle
-            anime.set(letters, { opacity: 0 });
-            anime.set(cursor, { opacity: 0 });
+    // Définir le tempo global pour l'arpège
+    Tone.Transport.bpm.value = 140; 
+    Tone.Transport.loop = true;
+    Tone.Transport.loopEnd = "2m"; 
 
-            const typingTimeline = anime.timeline({
-                easing: 'easeInOutQuad',
-                autoplay: true,
-                // **La boucle infinie est activée ici**
-                loop: true,
-                loopComplete: (anim) => {
-                    // Réinitialisation des opacités à la fin de la boucle
-                    anime.set(letters, { opacity: 0 });
-                    anime.set(cursor, { opacity: 0 });
-                }
-            });
+    // -----------------------------------------------------------
 
-            // 1. Animation de frappe (lettres apparaissent)
-            typingTimeline.add({
-                targets: letters,
-                opacity: 1,
-                duration: 130, 
-                delay: anime.stagger(130),
-            })
-            // 2. Le curseur apparaît
-            .add({
-                targets: cursor,
-                opacity: 1,
-                duration: 1, 
-            }, '+=200') // Démarre 200ms après la fin du typing
-            // 3. Pause avec le curseur clignotant
-            .add({
-                duration: 2000, 
-            }, '+=0'); 
+    const gameWidth = 600;
+    const gameHeight = 600;
+    const playerSpeed = 6;
+    const bulletSpeed = 7;
+    const enemySpeedStart = 2;
+    const shootCooldown = 200;
+
+    let keys = {};
+    let bullets = [];
+    let enemies = [];
+    let playerX = gameWidth / 2 - 15;
+    let lastShootTime = 0;
+    let lastEnemySpawn = 0;
+    let enemySpawnDelay = 1000;
+    let score = 0;
+    let isGameOver = false;
+    let lastFrameTime = performance.now();
+    let animationId; // ID de l'animation pour un arrêt/redémarrage propre
+
+    function setPlayerPosition() {
+      player.style.left = playerX + 'px';
+    }
+
+    function spawnEnemy() {
+      const enemy = document.createElement('div');
+      enemy.classList.add('enemy');
+      const x = Math.random() * (gameWidth - 30);
+      enemy.style.left = x + 'px';
+      enemy.style.top = '-40px';
+      game.appendChild(enemy);
+
+      enemies.push({
+        el: enemy,
+        x: x,
+        y: -40,
+        speed: enemySpeedStart + Math.random() * 2
+      });
+    }
+
+    function shoot() {
+      const now = performance.now();
+      if (now - lastShootTime < shootCooldown) return;
+      lastShootTime = now;
+
+      const rect = player.getBoundingClientRect();
+      const gameRect = game.getBoundingClientRect();
+
+      const bullet = document.createElement('div');
+      bullet.classList.add('bullet');
+
+      const bulletX = rect.left - gameRect.left + rect.width / 2 - 3;
+      const bulletY = rect.top - gameRect.top - 15;
+
+      bullet.style.left = bulletX + 'px';
+      bullet.style.top = bulletY + 'px';
+      game.appendChild(bullet);
+
+      bullets.push({ el: bullet, x: bulletX, y: bulletY });
+    }
+
+    function rectsOverlap(a, b) {
+      return !(a.right < b.left || a.left > b.right || a.bottom < b.top || a.top > b.bottom);
+    }
+
+    function endGame() {
+      if (isGameOver) return;
+      isGameOver = true; 
+      
+      // 🛑 ANNULATION EXPLICITE DE LA BOUCLE D'ANIMATION
+      cancelAnimationFrame(animationId); 
+
+      game.classList.add('shake');
+      setTimeout(() => game.classList.remove('shake'), 250);
+
+      overlay.classList.add('show');
+      finalScoreEl.textContent = 'SCORE : ' + score;
+
+      // 🔇 Arrêter la musique de fond
+      Tone.Transport.stop();
+      arp.stop();
+    }
+
+    function resetGame() {
+      
+      // ✅ L'état doit être réinitialisé en premier
+      isGameOver = false; 
+
+      // Arrêt du son pour la réinitialisation
+      Tone.Transport.stop();
+      arp.stop();
+      
+      bullets.forEach(b => b.el.remove());
+      enemies.forEach(e => e.el.remove());
+      bullets = [];
+      enemies = [];
+      score = 0;
+      scoreEl.textContent = '0';
+      
+      lastEnemySpawn = performance.now();
+      lastShootTime = 0;
+      enemySpawnDelay = 1000;
+      playerX = gameWidth / 2 - 15;
+      setPlayerPosition();
+      overlay.classList.remove('show');
+      lastFrameTime = performance.now();
+
+      // 🎶 Relancer la musique de fond
+      if (isToneStarted) {
+        arp.start(0); 
+        Tone.Transport.start();
+      }
+      
+      // 🚀 Relance la boucle de jeu
+      requestAnimationFrame(gameLoop);
+    }
+
+    function update(dt) {
+      if (keys['ArrowLeft']) playerX -= playerSpeed;
+      if (keys['ArrowRight']) playerX += playerSpeed;
+
+      if (playerX < 0) playerX = 0;
+      if (playerX > gameWidth - 30) playerX = gameWidth - 30;
+      setPlayerPosition();
+
+      if (keys[' '] || keys['Space']) shoot();
+
+      bullets.forEach((b, i) => {
+        b.y -= bulletSpeed;
+        b.el.style.top = b.y + 'px';
+        if (b.y < -20) {
+          b.el.remove();
+          bullets.splice(i, 1);
         }
-        
-        
-        /**
-         * Crée les synthétiseurs, les boucles et démarre le Transport de Tone.js.
-         */
-        async function startToneMusic() {
-            
-            const synthA = new Tone.FMSynth().toDestination();
-            const synthB = new Tone.AMSynth().toDestination();
-            
-            // Boucle 1
-            const loopA = new Tone.Loop((time) => {
-                synthA.triggerAttackRelease("C2", "8n", time);
-            }, "4n").start(0);
-            
-            // Boucle 2 (décalée)
-            const loopB = new Tone.Loop((time) => {
-                synthB.triggerAttackRelease("C4", "8n", time);
-            }, "4n").start("8n");
-            
-            // Démarrage et accélération du tempo
-            Tone.getTransport().start();
-            Tone.getTransport().bpm.rampTo(800, 10);
+      });
+
+      enemies.forEach((e, ei) => {
+        e.y += e.speed;
+        e.el.style.top = e.y + 'px';
+
+        if (e.y > gameHeight) {
+          e.el.remove();
+          enemies.splice(ei, 1);
+          return;
         }
-        
-        
-        let soundStarted = false;
-        
-        // **L'animation visuelle DÉMARRE IMMÉDIATEMENT au chargement**
-        startTypingAnimation();
-        
-        // **Le gestionnaire de clic est MAINTENU UNIQUEMENT pour le son**
-        document.body.addEventListener('click', async () => {
-            if (!soundStarted) {
-                // Nécessaire pour les navigateurs : démarre l'AudioContext lors de l'interaction
-                await Tone.start(); 
-                console.log("Audio Context Started");
-                
-                // Démarre la musique
-                startToneMusic();
-                
-                soundStarted = true;
+
+        const playerRect = player.getBoundingClientRect();
+        const enemyRect = e.el.getBoundingClientRect();
+        if (rectsOverlap(playerRect, enemyRect)) endGame();
+
+        bullets.forEach((b, bi) => {
+          const bulletRect = b.el.getBoundingClientRect();
+          if (rectsOverlap(enemyRect, bulletRect)) {
+
+            e.el.remove();
+            b.el.remove();
+            enemies.splice(ei, 1);
+            bullets.splice(bi, 1);
+
+            // 💥 Jouer l'explosion avec le nouveau NoiseSynth
+            if (isToneStarted) {
+                explosionSynth.triggerAttackRelease("8n"); // Appel du NoiseSynth
             }
-        }, { once: true }); 
-        
-        
-        if (!soundStarted) {
-            console.log("Cliquez n'importe où sur la page pour démarrer le son !");
-        }
+            
+            score++;
+            scoreEl.textContent = score;
+          }
+        });
+      });
 
+      const now = performance.now();
+      if (now - lastEnemySpawn > enemySpawnDelay) {
+        spawnEnemy();
+        lastEnemySpawn = now;
+        enemySpawnDelay = Math.max(400, 1000 - score * 20);
+      }
+    }
+
+    function gameLoop(timestamp) {
+      if (isGameOver) return; 
+      const dt = timestamp - lastFrameTime;
+      lastFrameTime = timestamp;
+      update(dt);
+      // Stocke l'ID pour pouvoir annuler explicitement la boucle
+      animationId = requestAnimationFrame(gameLoop);
+    }
+
+    document.addEventListener('keydown', e => {
+      if (e.key === ' ' || e.key === 'Space') { 
+        e.preventDefault(); 
+      }
+      keys[e.key] = true;
     });
-</script>
+
+    document.addEventListener('keyup', e => {
+      keys[e.key] = false;
+    });
+    
+    // GESTION DU REDÉMARRAGE APRÈS GAME OVER (Clic sur l'overlay)
+    overlay.addEventListener('click', () => {
+        if (isGameOver) {
+            resetGame();
+        }
+    });
+
+    // 🔊 GESTION DU DÉBLOCAGE AUDIO ET DÉMARRAGE INITIAL
+    audioGate.addEventListener('click', async () => {
+        if (isToneStarted) return; 
+
+        // 1. Débloque le contexte audio 
+        await Tone.start();
+        isToneStarted = true;
+        
+        // 2. Cache l'écran de démarrage
+        audioGate.style.display = 'none';
+
+        // 3. Lance la musique de fond
+        arp.start(0); 
+        Tone.Transport.start(); 
+        
+        // 4. Démarre la boucle de jeu 
+        if (!isGameOver) {
+            lastFrameTime = performance.now();
+            requestAnimationFrame(gameLoop);
+        }
+    });
+    
+  </script>
 
 </body>
 </html>
