@@ -1,1 +1,290 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Les yeux — mini jeu Junji Ito (Spirale)</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600&family=Roboto+Mono:wght@300;400&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg: #050505;
+      --blood: #b00020;
+      --blood-soft: #4b0010;
+      --text: #f5f5f5;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: radial-gradient(circle at center, #141414 0%, #050505 55%, #000 100%);
+      min-height: 100vh;
+      overflow: hidden;
+      font-family: "Cormorant Garamond", serif;
+      color: var(--text);
+      position: relative;
+    }
+
+    /* Effet grain */
+    body::before {
+      content: "";
+      position: fixed;
+      inset: -40px;
+      pointer-events: none;
+      background:
+        repeating-linear-gradient(
+          to bottom,
+          rgba(255, 255, 255, 0.02) 0px,
+          rgba(255, 255, 255, 0.01) 2px,
+          rgba(0, 0, 0, 0.4) 4px
+        );
+      mix-blend-mode: soft-light;
+      opacity: 0.7;
+      animation: drift 35s linear infinite;
+      z-index: 1;
+    }
+
+    @keyframes drift {
+      0% { transform: translateY(0); }
+      100% { transform: translateY(200px); }
+    }
+
+    @keyframes breathe {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.005); }
+    }
+
+    #scene {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+      animation: breathe 12s ease-in-out infinite;
+      cursor: crosshair;
+      z-index: 2;
+    }
+
+    /* Spirale creepy */
+    #spiral-bg {
+      position: absolute;
+      width: 420px;
+      height: 420px;
+      border-radius: 50%;
+      border: 2px solid rgba(176, 0, 32, 0.15);
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      box-shadow: 0 0 80px rgba(0,0,0,0.9);
+      opacity: 0.4;
+      animation: rotateSpiral 45s linear infinite;
+      pointer-events: none;
+    }
+    @keyframes rotateSpiral { 0% { transform: translate(-50%,-50%) rotate(0deg);} 100%{transform:translate(-50%,-50%) rotate(720deg);} }
+
+    /* HUD */
+    #hud {
+      position: fixed;
+      top: 16px;
+      left: 18px;
+      z-index: 3;
+      font-family: "Roboto Mono", monospace;
+      font-size: 13px;
+      background: rgba(0, 0, 0, 0.7);
+      padding: 8px 12px;
+      border-radius: 4px;
+      border: 1px solid rgba(176, 0, 32, 0.5);
+    }
+    #hud span { color: var(--blood); }
+
+    #hint {
+      position: fixed;
+      top: 16px;
+      right: 18px;
+      z-index: 3;
+      font-size: 13px;
+      font-family: "Cormorant Garamond", serif;
+      background: rgba(0, 0, 0, 0.65);
+      padding: 8px 12px;
+      border-radius: 4px;
+      border: 1px solid rgba(255,255,255,0.1);
+      max-width: 260px;
+      text-align: right;
+      line-height: 1.3;
+    }
+
+    /* Style des yeux */
+    .eye {
+      position: absolute;
+      width: 90px; height: 54px;
+      border-radius: 50%;
+      background: radial-gradient(circle, #fff 0%, #ccc 40%, #999 65%, #111 100%);
+      box-shadow: 0 0 30px rgba(0,0,0,0.9), 0 0 12px rgba(176,0,32,0.6);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+      transition: transform 0.2s ease-out, opacity 0.25s;
+      overflow: hidden;
+    }
+
+    .eye-ball {
+      width: 38px; height: 38px;
+      border-radius: 50%;
+      background: radial-gradient(circle,#660000 0%,#210000 55%,#000 100%);
+      display: flex; align-items: center; justify-content: center;
+      animation: irisPulse 6s ease-in-out infinite;
+    }
+    @keyframes irisPulse {
+      0%,100%{transform:scale(1);box-shadow:0 0 18px rgba(176,0,32,0.9);}
+      50%{transform:scale(1.07);box-shadow:0 0 28px rgba(255,0,40,0.95);}
+    }
+
+    .pupil {
+      width:16px;height:16px;border-radius:50%;background:#000;
+      box-shadow:0 0 18px rgba(255,255,255,0.25);
+    }
+
+    .eye.awake .eye-ball {
+      background: radial-gradient(circle,#9b0000 0%,#2b0000 55%,#000 100%);
+      box-shadow:0 0 28px rgba(255,0,0,1);
+      animation-duration:3.2s;
+    }
+
+    .eye.closed { opacity:0; pointer-events:none; transform:scale(0.7); }
+
+    /* GAME OVER */
+    #game-over-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.95);
+      display: flex; flex-direction: column; justify-content: center; align-items: center;
+      color: var(--text);
+      z-index: 5;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.4s;
+      padding: 20px;
+      text-align: center;
+    }
+    #game-over-overlay.show { opacity:1; pointer-events:auto; }
+    #game-over-overlay h1 { font-size:42px;letter-spacing:0.2em;margin-bottom:14px;color:var(--blood);}
+    #restart {
+      margin-top:6px;font-family:"Roboto Mono";font-size:13px;padding:8px 16px;border-radius:3px;
+      border:1px solid var(--blood);background:transparent;color:var(--text);cursor:pointer;
+    }
+  </style>
+</head>
+<body>
+
+  <div id="scene"><div id="spiral-bg"></div></div>
+
+  <div id="hud">
+    yeux réduits : <span id="closed-count">0</span><br>
+    yeux encore ouverts : <span id="open-count">0</span> / <span id="max-eyes"></span>
+  </div>
+
+  <div id="hint">Clique sur les yeux avant qu'ils n'atteignent la spirale.</div>
+
+  <div id="game-over-overlay">
+    <h1>GAME OVER</h1>
+    <p id="game-over-text"></p>
+    <button id="restart">Recommencer</button>
+  </div>
+
+  <!-- 🎵 MUSIQUE SIMPLE EN LOCAL (pas de bug) -->
+  <audio id="gameMusic" src="Game-over-Retro-Video-Game-1-422479.mp3" loop controls></audio>
+
+<script>
+/* ----- SCRIPT DU JEU ----- */
+
+const scene = document.getElementById("scene");
+const overlay = document.getElementById("game-over-overlay");
+const overlayText = document.getElementById("game-over-text");
+const restartBtn = document.getElementById("restart");
+const closedCountEl = document.getElementById("closed-count");
+const openCountEl = document.getElementById("open-count");
+const maxEyesEl = document.getElementById("max-eyes");
+
+const music = document.getElementById("gameMusic");
+
+let mouseX = window.innerWidth/2, mouseY = window.innerHeight/2;
+let eyes = [], closedCount=0, openCount=0;
+let maxEyes=10, spawnInterval=null, gameOver=false;
+
+maxEyesEl.textContent=maxEyes;
+
+/* MUSIC starts when we click anywhere */
+document.addEventListener("click", ()=>{ music.play(); }, {once:true});
+
+function createEye(){
+  if(gameOver) return;
+  const eye = document.createElement("div"); eye.classList.add("eye");
+  const eyeBall=document.createElement("div"); eyeBall.classList.add("eye-ball");
+  const pupil=document.createElement("div"); pupil.classList.add("pupil");
+  eyeBall.appendChild(pupil); eye.appendChild(eyeBall); scene.appendChild(eye);
+
+  const w=window.innerWidth,h=window.innerHeight;
+  let x=Math.random()*(w-120)+60, y=Math.random()*(h-120)+60;
+  eye.style.left=x+"px"; eye.style.top=y+"px";
+
+  const speed=0.05+Math.random()*0.05;
+  const data={el:eye,pupil,x,y,speed,awake:false,pupilX:0,pupilY:0};
+  eyes.push(data); openCount++; updateHud();
+
+  setTimeout(()=>{ if(!gameOver && !eye.classList.contains("closed")){eye.classList.add("awake"); data.awake=true;} },3500);
+
+  eye.addEventListener("click",()=>{
+    if(gameOver || eye.classList.contains("closed")) return;
+    eye.classList.add("closed");
+    setTimeout(()=>eye.remove(),250);
+    closedCount++; openCount--; updateHud();
+  });
+}
+
+function updateHud(){
+  closedCountEl.textContent=closedCount;
+  openCountEl.textContent=openCount;
+  if(openCount>=maxEyes) endGame("Tu as laissé trop d'yeux ouverts.");
+}
+
+function endGame(txt){
+  if(gameOver) return; gameOver=true;
+  music.pause(); /* STOP MUSIC */
+  clearInterval(spawnInterval);
+  overlayText.textContent=txt;
+  overlay.classList.add("show");
+}
+
+restartBtn.onclick=function(){
+  overlay.classList.remove("show"); music.play(); /* RESTART MUSIC */
+  gameOver=false; closedCount=0; openCount=0; eyes.forEach(e=>e.el.remove());
+  eyes=[]; updateHud(); spawnInterval=setInterval(createEye,1400); for(let i=0;i<3;i++)createEye();
+};
+
+document.addEventListener("mousemove",e=>{mouseX=e.clientX;mouseY=e.clientY;});
+
+function animate(){
+  const cx=window.innerWidth/2, cy=window.innerHeight/2;
+  eyes.forEach(e=>{
+    const dx=cx-(e.x+45), dy=cy-(e.y+27);
+    const d=Math.sqrt(dx*dx+dy*dy)||1;
+    if(d<100 && !gameOver) endGame("Un œil a atteint la spirale.");
+
+    e.x+=dx/d*e.speed*2; e.y+=dy/d*e.speed*2;
+    e.el.style.left=e.x+"px"; e.el.style.top=e.y+"px";
+
+    const rect=e.el.getBoundingClientRect();
+    const ang=Math.atan2(mouseY-(rect.top+27), mouseX-(rect.left+45));
+    const max=e.awake?9:7, tx=Math.cos(ang)*max, ty=Math.sin(ang)*max;
+    e.pupilX+=(tx-e.pupilX)*0.15; e.pupilY+=(ty-e.pupilY)*0.15;
+    e.pupil.style.transform=`translate(${e.pupilX}px,${e.pupilY}px)`;
+  });
+  requestAnimationFrame(animate);
+}
+
+spawnInterval=setInterval(createEye,1400); for(let i=0;i<3;i++)createEye(); animate();
+</script>
+
+</body>
+</html>
 
