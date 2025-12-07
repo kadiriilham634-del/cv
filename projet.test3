@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
-  <title>Les yeux — mini jeu Junji Ito (Spirale)</title>
+  <title>Les yeux — mini jeu Junji Ito</title>
 
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600&family=Roboto+Mono:wght@300;400&display=swap" rel="stylesheet">
 
@@ -13,12 +13,7 @@
       --blood-soft: #4b0010;
       --text: #f5f5f5;
     }
-
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
 
     body {
       background: radial-gradient(circle at center, #141414 0%, #050505 55%, #000 100%);
@@ -26,10 +21,8 @@
       overflow: hidden;
       font-family: "Cormorant Garamond", serif;
       color: var(--text);
-      position: relative;
     }
 
-    /* Grain + lignes inquiétantes */
     body::before {
       content: "";
       position: fixed;
@@ -42,305 +35,83 @@
           rgba(255, 255, 255, 0.01) 2px,
           rgba(0, 0, 0, 0.4) 4px
         );
-      mix-blend-mode: soft-light;
       opacity: 0.7;
       animation: drift 35s linear infinite;
+      mix-blend-mode: soft-light;
       z-index: 1;
     }
+    @keyframes drift { 0% { transform: translateY(0);} 100% { transform: translateY(200px);} }
 
-    @keyframes drift {
-      0% { transform: translateY(0); }
-      100% { transform: translateY(200px); }
-    }
+    #scene { width: 100vw; height: 100vh; cursor: crosshair; position: relative; z-index: 2; }
 
-    @keyframes breathe {
-      0%, 100% { transform: scale(1); }
-      50% { transform: scale(1.005); }
-    }
-
-    #scene {
-      position: relative;
-      width: 100vw;
-      height: 100vh;
-      overflow: hidden;
-      animation: breathe 12s ease-in-out infinite;
-      cursor: crosshair;
-      z-index: 2;
-    }
-
-    /* Spirale centrale */
     #spiral-bg {
       position: absolute;
-      width: 420px;
-      height: 420px;
+      width: 420px; height: 420px;
       border-radius: 50%;
       border: 2px solid rgba(176, 0, 32, 0.15);
-      left: 50%;
-      top: 50%;
+      left: 50%; top: 50%;
       transform: translate(-50%, -50%);
-      box-shadow: 0 0 80px rgba(0,0,0,0.9);
-      opacity: 0.4;
-      overflow: visible;
-      pointer-events: none;
-    }
-
-    #spiral-bg::before,
-    #spiral-bg::after {
-      content: "";
-      position: absolute;
-      inset: 22px;
-      border-radius: 50%;
-      border: 2px dashed rgba(176, 0, 32, 0.3);
-    }
-
-    #spiral-bg::after {
-      inset: 60px;
-      border-style: dotted;
-      opacity: 0.7;
-    }
-
-    @keyframes rotateSpiral {
-      0% { transform: translate(-50%, -50%) rotate(0deg); }
-      100% { transform: translate(-50%, -50%) rotate(720deg); }
-    }
-
-    #spiral-bg {
+      opacity: 0.4; box-shadow: 0 0 80px rgba(0,0,0,0.9);
       animation: rotateSpiral 45s linear infinite;
     }
+    @keyframes rotateSpiral { 0% { transform: translate(-50%, -50%) rotate(0deg);} 100% { transform: translate(-50%, -50%) rotate(720deg);} }
 
-    /* HUD */
     #hud {
-      position: fixed;
-      top: 16px;
-      left: 18px;
-      z-index: 3;
-      font-family: "Roboto Mono", monospace;
-      font-size: 13px;
-      background: rgba(0, 0, 0, 0.7);
-      padding: 8px 12px;
-      border-radius: 4px;
-      border: 1px solid rgba(176, 0, 32, 0.5);
-      box-shadow: 0 0 18px rgba(0,0,0,0.8);
+      position: fixed; top: 16px; left: 18px; z-index: 3;
+      background: rgba(0,0,0,0.7); padding: 8px 12px;
+      border-radius: 4px; border: 1px solid rgba(176,0,32,0.5);
+      font-family:"Roboto Mono", monospace; font-size: 13px;
     }
-
-    #hud span {
-      color: var(--blood);
-    }
+    #hud span { color: var(--blood); }
 
     #hint {
-      position: fixed;
-      top: 16px;
-      right: 18px;
-      z-index: 3;
-      font-size: 13px;
-      font-family: "Cormorant Garamond", serif;
-      background: rgba(0, 0, 0, 0.65);
-      padding: 8px 12px;
-      border-radius: 4px;
-      border: 1px solid rgba(255,255,255,0.1);
-      max-width: 260px;
-      text-align: right;
-      line-height: 1.3;
+      position: fixed; top: 16px; right: 18px; z-index: 3;
+      background: rgba(0,0,0,0.65); padding: 8px 12px;
+      border-radius: 4px; border: 1px solid rgba(255,255,255,0.1);
+      max-width: 260px; font-size: 13px; text-align: right;
     }
 
-    /* ANIMATIONS paupières / iris */
-    @keyframes irisPulse {
-      0%, 100% {
-        transform: scale(1);
-        box-shadow: 0 0 18px rgba(176,0,32,0.9);
-      }
-      50% {
-        transform: scale(1.07);
-        box-shadow: 0 0 28px rgba(255,0,40,0.95);
-      }
-    }
-
-    @keyframes blinkTop {
-      0%, 82%, 100%   { transform: translateY(0); }
-      85%, 90%        { transform: translateY(40%); }
-    }
-
-    @keyframes blinkBottom {
-      0%, 82%, 100%   { transform: scaleY(-1) translateY(0); }
-      85%, 90%        { transform: scaleY(-1) translateY(-40%); }
-    }
-
-    @keyframes blinkTopAwake {
-      0%, 70%, 100%   { transform: translateY(0); }
-      73%, 78%        { transform: translateY(45%); }
-    }
-
-    @keyframes blinkBottomAwake {
-      0%, 70%, 100%   { transform: scaleY(-1) translateY(0); }
-      73%, 78%        { transform: scaleY(-1) translateY(-45%); }
-    }
-
-    /* ŒIL */
     .eye {
-      position: absolute;
-      width: 90px;
-      height: 54px;
+      position: absolute; width: 90px; height: 54px;
       border-radius: 50%;
-      background: radial-gradient(circle at 50% 50%, #fff 0%, #ccc 40%, #999 65%, #111 100%);
-      box-shadow:
-        0 0 30px rgba(0, 0, 0, 0.9),
-        0 0 12px rgba(176, 0, 32, 0.6);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      transform-origin: center;
-      transition: transform 0.2s ease-out, opacity 0.25s; 
-      overflow: hidden;
-      cursor: pointer;
-    }
-
-    .eye::before,
-    .eye::after {
-      content: "";
-      position: absolute;
-      left: 0;
-      right: 0;
-      height: 40%;
-      background: radial-gradient(circle at 50% 0%, #111 0%, #050505 40%, transparent 100%);
-      opacity: 0.9;
-      pointer-events: none;
-    }
-
-    .eye::before {
-      top: -25%;
-      animation: blinkTop 7s ease-in-out infinite;
-    }
-
-    .eye::after {
-      bottom: -25%;
-      transform: scaleY(-1);
-      animation: blinkBottom 7s ease-in-out infinite;
+      background: radial-gradient(circle,#fff 0%,#ccc 40%,#999 65%,#111 100%);
+      box-shadow: 0 0 30px rgba(0,0,0,0.9),0 0 12px rgba(176,0,32,0.6);
+      display:flex; justify-content:center; align-items:center;
+      cursor:pointer; transition: transform .2s ease-out, opacity .25s;
     }
 
     .eye-ball {
-      position: relative;
-      width: 38px;
-      height: 38px;
-      border-radius: 50%;
-      background: radial-gradient(circle, #660000 0%, #210000 55%, #000 100%);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      box-shadow: 0 0 18px rgba(176,0,32,0.9);
-      animation: irisPulse 6s ease-in-out infinite;
+      width: 38px; height: 38px; border-radius:50%;
+      background: radial-gradient(circle,#660000 0%,#210000 55%,#000 100%);
+      box-shadow:0 0 18px rgba(176,0,32,0.9);
     }
 
-    .pupil {
-      position: relative;
-      width: 16px;
-      height: 16px;
-      border-radius: 50%;
-      background: #000;
-      box-shadow: 0 0 18px rgba(255,255,255,0.25);
-    }
+    .pupil { width:16px; height:16px; border-radius:50%; background:#000; }
+    .eye.closed { opacity:0; transform:scale(.7); pointer-events:none; }
 
-    .pupil::after {
-      content: "";
-      position: absolute;
-      width: 5px;
-      height: 5px;
-      border-radius: 50%;
-      background: rgba(255,255,255,0.7);
-      top: 3px;
-      left: 4px;
-    }
-
-    .eye.awake .eye-ball {
-      background: radial-gradient(circle, #9b0000 0%, #2b0000 55%, #000 100%);
-      box-shadow: 0 0 28px rgba(255,0,0,1);
-      animation-duration: 3.2s;
-    }
-
-    .eye.awake::before {
-      animation: blinkTopAwake 5s ease-in-out infinite;
-    }
-
-    .eye.awake::after {
-      animation: blinkBottomAwake 5s ease-in-out infinite;
-    }
-
-    .eye.closed {
-      opacity: 0;
-      pointer-events: none;
-      transform: scale(0.7);
-    }
-
-    /* GAME OVER */
     #game-over-overlay {
-      position: fixed;
-      inset: 0;
-      background: radial-gradient(circle at center, rgba(0,0,0,0.95) 0%, rgba(0,0,0,1) 60%);
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      color: var(--text);
-      z-index: 5;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.4s;
-      text-align: center;
-      padding: 20px;
+      position:fixed; inset:0; background:rgba(0,0,0,.96);
+      display:flex; flex-direction:column; justify-content:center; align-items:center;
+      opacity:0; pointer-events:none; transition:.4s;
     }
-
-    #game-over-overlay.show {
-      opacity: 1;
-      pointer-events: auto;
-    }
-
-    #game-over-overlay h1 {
-      font-size: 42px;
-      letter-spacing: 0.2em;
-      margin-bottom: 14px;
-      color: var(--blood);
-    }
-
-    #game-over-overlay p {
-      font-size: 16px;
-      max-width: 420px;
-      margin-bottom: 18px;
-    }
-
-    #restart {
-      margin-top: 6px;
-      font-family: "Roboto Mono", monospace;
-      font-size: 13px;
-      padding: 8px 16px;
-      border-radius: 3px;
-      border: 1px solid var(--blood);
-      background: transparent;
-      color: var(--text);
-      cursor: pointer;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-    }
-
-    #restart:hover {
-      background: var(--blood-soft);
-    }
-
+    #game-over-overlay.show { opacity:1; pointer-events:auto; }
+    #game-over-overlay h1 { color:var(--blood); margin-bottom:12px; letter-spacing:.2em; }
+    #restart { margin-top:6px; padding:8px 16px; background:transparent;border:1px solid var(--blood); color:var(--text); cursor:pointer; }
   </style>
 </head>
 <body>
 
-  <div id="scene">
-    <div id="spiral-bg"></div>
-  </div>
+  <!-- 🎵 Musique -->
+  <audio id="bgMusic" src="Game-over-Retro-Video-Game-1-422479.mp3" loop></audio>
+
+  <div id="scene"><div id="spiral-bg"></div></div>
 
   <div id="hud">
     yeux réduits : <span id="closed-count">0</span><br>
     yeux encore ouverts : <span id="open-count">0</span> / <span id="max-eyes"></span>
   </div>
 
-  <div id="hint">
-    Clique sur les yeux avant qu'ils n'atteignent la spirale.<br>
-    Trop d'yeux ouverts à la fois… ou un seul trop près du centre, et ils t'avalent.
-  </div>
+  <div id="hint">Clique sur les yeux avant qu'ils n'atteignent le centre.</div>
 
   <div id="game-over-overlay">
     <h1>GAME OVER</h1>
@@ -348,199 +119,74 @@
     <button id="restart">recommencer</button>
   </div>
 
-  <script>
-    const scene = document.getElementById("scene");
-    const closedCountEl = document.getElementById("closed-count");
-    const openCountEl = document.getElementById("open-count");
-    const maxEyesEl = document.getElementById("max-eyes");
-    const overlay = document.getElementById("game-over-overlay");
-    const overlayText = document.getElementById("game-over-text");
-    const restartBtn = document.getElementById("restart");
+<script>
+/************* MUSIQUE **************/
+const bgMusic = document.getElementById("bgMusic");
+let musicStarted = false;
 
-    let mouseX = window.innerWidth / 2;
-    let mouseY = window.innerHeight / 2;
-    const smoothingFactor = 0.15; 
+document.addEventListener("click", () => {
+  if (!musicStarted) {
+    bgMusic.volume = 0.35;
+    bgMusic.play().catch(()=>{});
+    musicStarted = true;
+  }
+});
 
-    let eyes = [];
-    let closedCount = 0;
-    let openCount = 0;
+function stopMusic(){ bgMusic.pause(); }
+function startMusicAgain(){ bgMusic.currentTime=0; bgMusic.play().catch(()=>{}); }
 
-    const maxEyes = 10;           // un peu moins, plus tendu
-    const spawnIntervalMs = 1400; // spawn plus rapide
-    let spawnIntervalId = null;
-    let gameOver = false;
+/************* JEU **************/
+const scene=document.getElementById("scene"),closedCountEl=document.getElementById("closed-count"),openCountEl=document.getElementById("open-count"),maxEyesEl=document.getElementById("max-eyes"),overlay=document.getElementById("game-over-overlay"),overlayText=document.getElementById("game-over-text"),restartBtn=document.getElementById("restart");
 
-    maxEyesEl.textContent = maxEyes;
+let mouseX=window.innerWidth/2,mouseY=window.innerHeight/2;
+document.addEventListener("mousemove",e=>{mouseX=e.clientX;mouseY=e.clientY;});
 
-    document.addEventListener("mousemove", (e) => {
-      mouseX = e.clientX;
-      mouseY = e.clientY;
-    });
+let eyes=[],closedCount=0,openCount=0,maxEyes=10,spawnIntervalMs=1400,spawnIntervalId=null,gameOver=false;
+maxEyesEl.textContent=maxEyes;
 
-    function createEye() {
-      if (gameOver) return;
+function createEye(){
+  if(gameOver)return;
+  const eye=document.createElement("div"); eye.classList.add("eye");
+  const pupil=document.createElement("div"); const ball=document.createElement("div");
+  pupil.classList.add("pupil"); ball.classList.add("eye-ball");
+  ball.appendChild(pupil); eye.appendChild(ball); scene.appendChild(eye);
 
-      const eye = document.createElement("div");
-      eye.classList.add("eye");
+  let x=Math.random()*(window.innerWidth-80)+40, y=Math.random()*(window.innerHeight-80)+40;
+  eye.style.left=`${x}px`; eye.style.top=`${y}px`;
 
-      const eyeBall = document.createElement("div");
-      eyeBall.classList.add("eye-ball");
+  eyes.push({el:eye,pupil,x,y,speedBase:0.08+Math.random()*0.06});
+  openCount++; updateHud();
 
-      const pupil = document.createElement("div");
-      pupil.classList.add("pupil");
+  eye.addEventListener("click",()=>{ if(gameOver)return; eye.classList.add("closed"); openCount--; closedCount++; updateHud(); setTimeout(()=>eye.remove(),250); });
+}
 
-      eyeBall.appendChild(pupil);
-      eye.appendChild(eyeBall);
-      scene.appendChild(eye);
+function updateHud(){ closedCountEl.textContent=closedCount; openCountEl.textContent=openCount; if(openCount>=maxEyes) triggerGameOver("Trop d'yeux t'observaient en même temps."); }
 
-      const padding = 40;
-      const w = window.innerWidth;
-      const h = window.innerHeight;
+function triggerGameOver(text){
+  if(gameOver)return; gameOver=true; clearInterval(spawnIntervalId); stopMusic();
+  overlayText.textContent=text; overlay.classList.add("show");
+}
 
-      let x = Math.random() * (w - 2 * padding) + padding;
-      let y = Math.random() * (h - 2 * padding) + padding;
+function resetGame(){
+  gameOver=false; eyes.forEach(e=>e.el.remove()); eyes=[]; closedCount=0; openCount=0; updateHud(); overlay.classList.remove("show");
+  startMusicAgain();
+  spawnIntervalId=setInterval(createEye,spawnIntervalMs); for(let i=0;i<3;i++) createEye();
+}
 
-      eye.style.left = `${x}px`;
-      eye.style.top = `${y}px`;
+function animate(){
+  const cx=window.innerWidth/2, cy=window.innerHeight/2;
+  eyes.forEach(e=>{
+    const dx=cx-(e.x+45), dy=cy-(e.y+27), dist=Math.sqrt(dx*dx+dy*dy)||1;
+    e.x+=(dx/dist)*(e.speedBase*dist/80); e.y+=(dy/dist)*(e.speedBase*dist/80);
+    e.el.style.left=`${e.x}px`; e.el.style.top=`${e.y}px`;
+    if(!gameOver && dist<120) triggerGameOver("Un œil a atteint le centre.");
+  });
+  requestAnimationFrame(animate);
+}
 
-      const speedBase = 0.08 + Math.random() * 0.06; // vitesse vers la spirale
-
-      const eyeData = {
-        el: eye,
-        pupil,
-        awake: false,
-        pupilX: 0,
-        pupilY: 0,
-        x,
-        y,
-        speedBase
-      };
-
-      eyes.push(eyeData);
-      openCount++;
-      updateHud();
-
-      const awakeTimeout = setTimeout(() => {
-        if (!gameOver && !eye.classList.contains("closed")) {
-          eye.classList.add("awake");
-          eyeData.awake = true;
-          checkGameOver();
-        }
-      }, 3500 + Math.random() * 2000);
-
-      eyeData.awakeTimeout = awakeTimeout;
-
-      eye.addEventListener("click", () => {
-        if (gameOver || eye.classList.contains("closed")) return;
-        eye.classList.add("closed");
-        clearTimeout(awakeTimeout);
-        setTimeout(() => {
-          eye.remove();
-        }, 260);
-        openCount--;
-        closedCount++;
-        updateHud();
-      });
-    }
-
-    function updateHud() {
-      closedCountEl.textContent = closedCount;
-      openCountEl.textContent = openCount;
-      checkGameOver();
-    }
-
-    function checkGameOver() {
-      if (openCount >= maxEyes && !gameOver) {
-        triggerGameOver("Tu as laissé trop d'yeux ouverts en même temps. Ils n'avaient plus besoin de se cacher.");
-      }
-    }
-
-    function triggerGameOver(customText) {
-      if (gameOver) return;
-      gameOver = true;
-      clearInterval(spawnIntervalId);
-
-      const textsFallback = [
-        "Tu en as fermé quelques-uns, mais les autres te regardaient déjà depuis l'intérieur.",
-        "Tu croyais les faire taire. Ils attendaient seulement que tu clignes des yeux.",
-        "Tu n'as pas perdu le jeu. Tu as simplement découvert que tu n'étais pas seul devant l'écran."
-      ];
-
-      overlayText.textContent = customText || textsFallback[Math.floor(Math.random() * textsFallback.length)];
-      overlay.classList.add("show");
-    }
-
-    function resetGame() {
-      gameOver = false;
-
-      eyes.forEach(e => {
-        clearTimeout(e.awakeTimeout);
-        e.el.remove();
-      });
-      eyes = [];
-      closedCount = 0;
-      openCount = 0;
-      updateHud();
-
-      overlay.classList.remove("show");
-
-      spawnIntervalId = setInterval(createEye, spawnIntervalMs);
-      for (let i = 0; i < 3; i++) createEye();
-    }
-
-    function animate() {
-      const centerX = window.innerWidth / 2;
-      const centerY = window.innerHeight / 2;
-      const spiralRadius = 120; // zone "danger"
-
-      eyes.forEach((eyeData) => {
-        const rect = eyeData.el.getBoundingClientRect();
-        const eyeCenterX = rect.left + rect.width / 2;
-        const eyeCenterY = rect.top + rect.height / 2;
-
-        // mouvement vers la spirale
-        const dxCenter = centerX - eyeCenterX;
-        const dyCenter = centerY - eyeCenterY;
-        const distCenter = Math.sqrt(dxCenter * dxCenter + dyCenter * dyCenter) || 1;
-
-        const speed = eyeData.speedBase * (eyeData.awake ? 2.5 : 1.4);
-
-        eyeData.x += (dxCenter / distCenter) * speed * distCenter / 80;
-        eyeData.y += (dyCenter / distCenter) * speed * distCenter / 80;
-
-        eyeData.el.style.left = `${eyeData.x}px`;
-        eyeData.el.style.top = `${eyeData.y}px`;
-
-        // si trop proche du centre -> GAME OVER "spirale"
-        if (!gameOver && distCenter < spiralRadius) {
-          triggerGameOver("Un œil a atteint la spirale. Le centre t'a regardé en retour.");
-        }
-
-        // mouvement de la pupille vers la souris
-        const dxMouse = mouseX - eyeCenterX;
-        const dyMouse = mouseY - eyeCenterY;
-        const angle = Math.atan2(dyMouse, dxMouse);
-        const maxOffset = eyeData.awake ? 9 : 7;
-
-        const targetX = Math.cos(angle) * maxOffset;
-        const targetY = Math.sin(angle) * maxOffset;
-
-        eyeData.pupilX += (targetX - eyeData.pupilX) * smoothingFactor;
-        eyeData.pupilY += (targetY - eyeData.pupilY) * smoothingFactor;
-
-        eyeData.pupil.style.transform = `translate(${eyeData.pupilX}px, ${eyeData.pupilY}px)`;
-      });
-
-      requestAnimationFrame(animate);
-    }
-
-    resetGame();
-    animate();
-
-    restartBtn.addEventListener("click", () => {
-      resetGame();
-    });
-  </script>
+resetGame(); animate();
+restartBtn.addEventListener("click",resetGame);
+</script>
 
 </body>
 </html>
