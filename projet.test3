@@ -14,7 +14,11 @@
       --text: #f5f5f5;
     }
 
-    * { box-sizing: border-box; margin: 0; padding: 0; }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
 
     body {
       background: radial-gradient(circle at center, #141414 0%, #050505 55%, #000 100%);
@@ -25,7 +29,7 @@
       position: relative;
     }
 
-    /* Effet grain */
+    /* Grain + lignes inquiétantes */
     body::before {
       content: "";
       position: fixed;
@@ -64,7 +68,7 @@
       z-index: 2;
     }
 
-    /* Spirale creepy */
+    /* Spirale centrale */
     #spiral-bg {
       position: absolute;
       width: 420px;
@@ -76,10 +80,33 @@
       transform: translate(-50%, -50%);
       box-shadow: 0 0 80px rgba(0,0,0,0.9);
       opacity: 0.4;
-      animation: rotateSpiral 45s linear infinite;
+      overflow: visible;
       pointer-events: none;
     }
-    @keyframes rotateSpiral { 0% { transform: translate(-50%,-50%) rotate(0deg);} 100%{transform:translate(-50%,-50%) rotate(720deg);} }
+
+    #spiral-bg::before,
+    #spiral-bg::after {
+      content: "";
+      position: absolute;
+      inset: 22px;
+      border-radius: 50%;
+      border: 2px dashed rgba(176, 0, 32, 0.3);
+    }
+
+    #spiral-bg::after {
+      inset: 60px;
+      border-style: dotted;
+      opacity: 0.7;
+    }
+
+    @keyframes rotateSpiral {
+      0% { transform: translate(-50%, -50%) rotate(0deg); }
+      100% { transform: translate(-50%, -50%) rotate(720deg); }
+    }
+
+    #spiral-bg {
+      animation: rotateSpiral 45s linear infinite;
+    }
 
     /* HUD */
     #hud {
@@ -93,8 +120,12 @@
       padding: 8px 12px;
       border-radius: 4px;
       border: 1px solid rgba(176, 0, 32, 0.5);
+      box-shadow: 0 0 18px rgba(0,0,0,0.8);
     }
-    #hud span { color: var(--blood); }
+
+    #hud span {
+      color: var(--blood);
+    }
 
     #hint {
       position: fixed;
@@ -112,179 +143,404 @@
       line-height: 1.3;
     }
 
-    /* Style des yeux */
+    /* ANIMATIONS paupières / iris */
+    @keyframes irisPulse {
+      0%, 100% {
+        transform: scale(1);
+        box-shadow: 0 0 18px rgba(176,0,32,0.9);
+      }
+      50% {
+        transform: scale(1.07);
+        box-shadow: 0 0 28px rgba(255,0,40,0.95);
+      }
+    }
+
+    @keyframes blinkTop {
+      0%, 82%, 100%   { transform: translateY(0); }
+      85%, 90%        { transform: translateY(40%); }
+    }
+
+    @keyframes blinkBottom {
+      0%, 82%, 100%   { transform: scaleY(-1) translateY(0); }
+      85%, 90%        { transform: scaleY(-1) translateY(-40%); }
+    }
+
+    @keyframes blinkTopAwake {
+      0%, 70%, 100%   { transform: translateY(0); }
+      73%, 78%        { transform: translateY(45%); }
+    }
+
+    @keyframes blinkBottomAwake {
+      0%, 70%, 100%   { transform: scaleY(-1) translateY(0); }
+      73%, 78%        { transform: scaleY(-1) translateY(-45%); }
+    }
+
+    /* ŒIL */
     .eye {
       position: absolute;
-      width: 90px; height: 54px;
+      width: 90px;
+      height: 54px;
       border-radius: 50%;
-      background: radial-gradient(circle, #fff 0%, #ccc 40%, #999 65%, #111 100%);
-      box-shadow: 0 0 30px rgba(0,0,0,0.9), 0 0 12px rgba(176,0,32,0.6);
+      background: radial-gradient(circle at 50% 50%, #fff 0%, #ccc 40%, #999 65%, #111 100%);
+      box-shadow:
+        0 0 30px rgba(0, 0, 0, 0.9),
+        0 0 12px rgba(176, 0, 32, 0.6);
       display: flex;
       justify-content: center;
       align-items: center;
-      cursor: pointer;
-      transition: transform 0.2s ease-out, opacity 0.25s;
+      transform-origin: center;
+      transition: transform 0.2s ease-out, opacity 0.25s; 
       overflow: hidden;
+      cursor: pointer;
+    }
+
+    .eye::before,
+    .eye::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      right: 0;
+      height: 40%;
+      background: radial-gradient(circle at 50% 0%, #111 0%, #050505 40%, transparent 100%);
+      opacity: 0.9;
+      pointer-events: none;
+    }
+
+    .eye::before {
+      top: -25%;
+      animation: blinkTop 7s ease-in-out infinite;
+    }
+
+    .eye::after {
+      bottom: -25%;
+      transform: scaleY(-1);
+      animation: blinkBottom 7s ease-in-out infinite;
     }
 
     .eye-ball {
-      width: 38px; height: 38px;
+      position: relative;
+      width: 38px;
+      height: 38px;
       border-radius: 50%;
-      background: radial-gradient(circle,#660000 0%,#210000 55%,#000 100%);
-      display: flex; align-items: center; justify-content: center;
+      background: radial-gradient(circle, #660000 0%, #210000 55%, #000 100%);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      box-shadow: 0 0 18px rgba(176,0,32,0.9);
       animation: irisPulse 6s ease-in-out infinite;
-    }
-    @keyframes irisPulse {
-      0%,100%{transform:scale(1);box-shadow:0 0 18px rgba(176,0,32,0.9);}
-      50%{transform:scale(1.07);box-shadow:0 0 28px rgba(255,0,40,0.95);}
     }
 
     .pupil {
-      width:16px;height:16px;border-radius:50%;background:#000;
-      box-shadow:0 0 18px rgba(255,255,255,0.25);
+      position: relative;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: #000;
+      box-shadow: 0 0 18px rgba(255,255,255,0.25);
+    }
+
+    .pupil::after {
+      content: "";
+      position: absolute;
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.7);
+      top: 3px;
+      left: 4px;
     }
 
     .eye.awake .eye-ball {
-      background: radial-gradient(circle,#9b0000 0%,#2b0000 55%,#000 100%);
-      box-shadow:0 0 28px rgba(255,0,0,1);
-      animation-duration:3.2s;
+      background: radial-gradient(circle, #9b0000 0%, #2b0000 55%, #000 100%);
+      box-shadow: 0 0 28px rgba(255,0,0,1);
+      animation-duration: 3.2s;
     }
 
-    .eye.closed { opacity:0; pointer-events:none; transform:scale(0.7); }
+    .eye.awake::before {
+      animation: blinkTopAwake 5s ease-in-out infinite;
+    }
+
+    .eye.awake::after {
+      animation: blinkBottomAwake 5s ease-in-out infinite;
+    }
+
+    .eye.closed {
+      opacity: 0;
+      pointer-events: none;
+      transform: scale(0.7);
+    }
 
     /* GAME OVER */
     #game-over-overlay {
       position: fixed;
       inset: 0;
-      background: rgba(0,0,0,0.95);
-      display: flex; flex-direction: column; justify-content: center; align-items: center;
+      background: radial-gradient(circle at center, rgba(0,0,0,0.95) 0%, rgba(0,0,0,1) 60%);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
       color: var(--text);
       z-index: 5;
       opacity: 0;
       pointer-events: none;
       transition: opacity 0.4s;
-      padding: 20px;
       text-align: center;
+      padding: 20px;
     }
-    #game-over-overlay.show { opacity:1; pointer-events:auto; }
-    #game-over-overlay h1 { font-size:42px;letter-spacing:0.2em;margin-bottom:14px;color:var(--blood);}
+
+    #game-over-overlay.show {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    #game-over-overlay h1 {
+      font-size: 42px;
+      letter-spacing: 0.2em;
+      margin-bottom: 14px;
+      color: var(--blood);
+    }
+
+    #game-over-overlay p {
+      font-size: 16px;
+      max-width: 420px;
+      margin-bottom: 18px;
+    }
+
     #restart {
-      margin-top:6px;font-family:"Roboto Mono";font-size:13px;padding:8px 16px;border-radius:3px;
-      border:1px solid var(--blood);background:transparent;color:var(--text);cursor:pointer;
+      margin-top: 6px;
+      font-family: "Roboto Mono", monospace;
+      font-size: 13px;
+      padding: 8px 16px;
+      border-radius: 3px;
+      border: 1px solid var(--blood);
+      background: transparent;
+      color: var(--text);
+      cursor: pointer;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
     }
+
+    #restart:hover {
+      background: var(--blood-soft);
+    }
+
   </style>
 </head>
 <body>
 
-  <div id="scene"><div id="spiral-bg"></div></div>
+  <div id="scene">
+    <div id="spiral-bg"></div>
+  </div>
 
   <div id="hud">
     yeux réduits : <span id="closed-count">0</span><br>
     yeux encore ouverts : <span id="open-count">0</span> / <span id="max-eyes"></span>
   </div>
 
-  <div id="hint">Clique sur les yeux avant qu'ils n'atteignent la spirale.</div>
+  <div id="hint">
+    Clique sur les yeux avant qu'ils n'atteignent la spirale.<br>
+    Trop d'yeux ouverts à la fois… ou un seul trop près du centre, et ils t'avalent.
+  </div>
 
   <div id="game-over-overlay">
     <h1>GAME OVER</h1>
     <p id="game-over-text"></p>
-    <button id="restart">Recommencer</button>
+    <button id="restart">recommencer</button>
   </div>
 
-  <!-- 🎵 MUSIQUE SIMPLE EN LOCAL (pas de bug) -->
-  <audio id="gameMusic" src="Game-over-Retro-Video-Game-1-422479.mp3" loop controls></audio>
+  <script>
+    const scene = document.getElementById("scene");
+    const closedCountEl = document.getElementById("closed-count");
+    const openCountEl = document.getElementById("open-count");
+    const maxEyesEl = document.getElementById("max-eyes");
+    const overlay = document.getElementById("game-over-overlay");
+    const overlayText = document.getElementById("game-over-text");
+    const restartBtn = document.getElementById("restart");
 
-<script>
-/* ----- SCRIPT DU JEU ----- */
+    let mouseX = window.innerWidth / 2;
+    let mouseY = window.innerHeight / 2;
+    const smoothingFactor = 0.15; 
 
-const scene = document.getElementById("scene");
-const overlay = document.getElementById("game-over-overlay");
-const overlayText = document.getElementById("game-over-text");
-const restartBtn = document.getElementById("restart");
-const closedCountEl = document.getElementById("closed-count");
-const openCountEl = document.getElementById("open-count");
-const maxEyesEl = document.getElementById("max-eyes");
+    let eyes = [];
+    let closedCount = 0;
+    let openCount = 0;
 
-const music = document.getElementById("gameMusic");
+    const maxEyes = 10;           // un peu moins, plus tendu
+    const spawnIntervalMs = 1400; // spawn plus rapide
+    let spawnIntervalId = null;
+    let gameOver = false;
 
-let mouseX = window.innerWidth/2, mouseY = window.innerHeight/2;
-let eyes = [], closedCount=0, openCount=0;
-let maxEyes=10, spawnInterval=null, gameOver=false;
+    maxEyesEl.textContent = maxEyes;
 
-maxEyesEl.textContent=maxEyes;
+    document.addEventListener("mousemove", (e) => {
+      mouseX = e.clientX;
+      mouseY = e.clientY;
+    });
 
-/* MUSIC starts when we click anywhere */
-document.addEventListener("click", ()=>{ music.play(); }, {once:true});
+    function createEye() {
+      if (gameOver) return;
 
-function createEye(){
-  if(gameOver) return;
-  const eye = document.createElement("div"); eye.classList.add("eye");
-  const eyeBall=document.createElement("div"); eyeBall.classList.add("eye-ball");
-  const pupil=document.createElement("div"); pupil.classList.add("pupil");
-  eyeBall.appendChild(pupil); eye.appendChild(eyeBall); scene.appendChild(eye);
+      const eye = document.createElement("div");
+      eye.classList.add("eye");
 
-  const w=window.innerWidth,h=window.innerHeight;
-  let x=Math.random()*(w-120)+60, y=Math.random()*(h-120)+60;
-  eye.style.left=x+"px"; eye.style.top=y+"px";
+      const eyeBall = document.createElement("div");
+      eyeBall.classList.add("eye-ball");
 
-  const speed=0.05+Math.random()*0.05;
-  const data={el:eye,pupil,x,y,speed,awake:false,pupilX:0,pupilY:0};
-  eyes.push(data); openCount++; updateHud();
+      const pupil = document.createElement("div");
+      pupil.classList.add("pupil");
 
-  setTimeout(()=>{ if(!gameOver && !eye.classList.contains("closed")){eye.classList.add("awake"); data.awake=true;} },3500);
+      eyeBall.appendChild(pupil);
+      eye.appendChild(eyeBall);
+      scene.appendChild(eye);
 
-  eye.addEventListener("click",()=>{
-    if(gameOver || eye.classList.contains("closed")) return;
-    eye.classList.add("closed");
-    setTimeout(()=>eye.remove(),250);
-    closedCount++; openCount--; updateHud();
-  });
-}
+      const padding = 40;
+      const w = window.innerWidth;
+      const h = window.innerHeight;
 
-function updateHud(){
-  closedCountEl.textContent=closedCount;
-  openCountEl.textContent=openCount;
-  if(openCount>=maxEyes) endGame("Tu as laissé trop d'yeux ouverts.");
-}
+      let x = Math.random() * (w - 2 * padding) + padding;
+      let y = Math.random() * (h - 2 * padding) + padding;
 
-function endGame(txt){
-  if(gameOver) return; gameOver=true;
-  music.pause(); /* STOP MUSIC */
-  clearInterval(spawnInterval);
-  overlayText.textContent=txt;
-  overlay.classList.add("show");
-}
+      eye.style.left = `${x}px`;
+      eye.style.top = `${y}px`;
 
-restartBtn.onclick=function(){
-  overlay.classList.remove("show"); music.play(); /* RESTART MUSIC */
-  gameOver=false; closedCount=0; openCount=0; eyes.forEach(e=>e.el.remove());
-  eyes=[]; updateHud(); spawnInterval=setInterval(createEye,1400); for(let i=0;i<3;i++)createEye();
-};
+      const speedBase = 0.08 + Math.random() * 0.06; // vitesse vers la spirale
 
-document.addEventListener("mousemove",e=>{mouseX=e.clientX;mouseY=e.clientY;});
+      const eyeData = {
+        el: eye,
+        pupil,
+        awake: false,
+        pupilX: 0,
+        pupilY: 0,
+        x,
+        y,
+        speedBase
+      };
 
-function animate(){
-  const cx=window.innerWidth/2, cy=window.innerHeight/2;
-  eyes.forEach(e=>{
-    const dx=cx-(e.x+45), dy=cy-(e.y+27);
-    const d=Math.sqrt(dx*dx+dy*dy)||1;
-    if(d<100 && !gameOver) endGame("Un œil a atteint la spirale.");
+      eyes.push(eyeData);
+      openCount++;
+      updateHud();
 
-    e.x+=dx/d*e.speed*2; e.y+=dy/d*e.speed*2;
-    e.el.style.left=e.x+"px"; e.el.style.top=e.y+"px";
+      const awakeTimeout = setTimeout(() => {
+        if (!gameOver && !eye.classList.contains("closed")) {
+          eye.classList.add("awake");
+          eyeData.awake = true;
+          checkGameOver();
+        }
+      }, 3500 + Math.random() * 2000);
 
-    const rect=e.el.getBoundingClientRect();
-    const ang=Math.atan2(mouseY-(rect.top+27), mouseX-(rect.left+45));
-    const max=e.awake?9:7, tx=Math.cos(ang)*max, ty=Math.sin(ang)*max;
-    e.pupilX+=(tx-e.pupilX)*0.15; e.pupilY+=(ty-e.pupilY)*0.15;
-    e.pupil.style.transform=`translate(${e.pupilX}px,${e.pupilY}px)`;
-  });
-  requestAnimationFrame(animate);
-}
+      eyeData.awakeTimeout = awakeTimeout;
 
-spawnInterval=setInterval(createEye,1400); for(let i=0;i<3;i++)createEye(); animate();
-</script>
+      eye.addEventListener("click", () => {
+        if (gameOver || eye.classList.contains("closed")) return;
+        eye.classList.add("closed");
+        clearTimeout(awakeTimeout);
+        setTimeout(() => {
+          eye.remove();
+        }, 260);
+        openCount--;
+        closedCount++;
+        updateHud();
+      });
+    }
+
+    function updateHud() {
+      closedCountEl.textContent = closedCount;
+      openCountEl.textContent = openCount;
+      checkGameOver();
+    }
+
+    function checkGameOver() {
+      if (openCount >= maxEyes && !gameOver) {
+        triggerGameOver("Tu as laissé trop d'yeux ouverts en même temps. Ils n'avaient plus besoin de se cacher.");
+      }
+    }
+
+    function triggerGameOver(customText) {
+      if (gameOver) return;
+      gameOver = true;
+      clearInterval(spawnIntervalId);
+
+      const textsFallback = [
+        "Tu en as fermé quelques-uns, mais les autres te regardaient déjà depuis l'intérieur.",
+        "Tu croyais les faire taire. Ils attendaient seulement que tu clignes des yeux.",
+        "Tu n'as pas perdu le jeu. Tu as simplement découvert que tu n'étais pas seul devant l'écran."
+      ];
+
+      overlayText.textContent = customText || textsFallback[Math.floor(Math.random() * textsFallback.length)];
+      overlay.classList.add("show");
+    }
+
+    function resetGame() {
+      gameOver = false;
+
+      eyes.forEach(e => {
+        clearTimeout(e.awakeTimeout);
+        e.el.remove();
+      });
+      eyes = [];
+      closedCount = 0;
+      openCount = 0;
+      updateHud();
+
+      overlay.classList.remove("show");
+
+      spawnIntervalId = setInterval(createEye, spawnIntervalMs);
+      for (let i = 0; i < 3; i++) createEye();
+    }
+
+    function animate() {
+      const centerX = window.innerWidth / 2;
+      const centerY = window.innerHeight / 2;
+      const spiralRadius = 120; // zone "danger"
+
+      eyes.forEach((eyeData) => {
+        const rect = eyeData.el.getBoundingClientRect();
+        const eyeCenterX = rect.left + rect.width / 2;
+        const eyeCenterY = rect.top + rect.height / 2;
+
+        // mouvement vers la spirale
+        const dxCenter = centerX - eyeCenterX;
+        const dyCenter = centerY - eyeCenterY;
+        const distCenter = Math.sqrt(dxCenter * dxCenter + dyCenter * dyCenter) || 1;
+
+        const speed = eyeData.speedBase * (eyeData.awake ? 2.5 : 1.4);
+
+        eyeData.x += (dxCenter / distCenter) * speed * distCenter / 80;
+        eyeData.y += (dyCenter / distCenter) * speed * distCenter / 80;
+
+        eyeData.el.style.left = `${eyeData.x}px`;
+        eyeData.el.style.top = `${eyeData.y}px`;
+
+        // si trop proche du centre -> GAME OVER "spirale"
+        if (!gameOver && distCenter < spiralRadius) {
+          triggerGameOver("Un œil a atteint la spirale. Le centre t'a regardé en retour.");
+        }
+
+        // mouvement de la pupille vers la souris
+        const dxMouse = mouseX - eyeCenterX;
+        const dyMouse = mouseY - eyeCenterY;
+        const angle = Math.atan2(dyMouse, dxMouse);
+        const maxOffset = eyeData.awake ? 9 : 7;
+
+        const targetX = Math.cos(angle) * maxOffset;
+        const targetY = Math.sin(angle) * maxOffset;
+
+        eyeData.pupilX += (targetX - eyeData.pupilX) * smoothingFactor;
+        eyeData.pupilY += (targetY - eyeData.pupilY) * smoothingFactor;
+
+        eyeData.pupil.style.transform = `translate(${eyeData.pupilX}px, ${eyeData.pupilY}px)`;
+      });
+
+      requestAnimationFrame(animate);
+    }
+
+    resetGame();
+    animate();
+
+    restartBtn.addEventListener("click", () => {
+      resetGame();
+    });
+  </script>
 
 </body>
 </html>
-
