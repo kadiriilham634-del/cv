@@ -1,0 +1,828 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Les yeux — mini jeu Junji Ito (Spirale)</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600&family=Roboto+Mono:wght@300;400&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg: #050505;
+      --blood: #b00020;
+      --blood-soft: #4b0010;
+      --text: #f5f5f5;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background: radial-gradient(circle at center, #141414 0%, #050505 55%, #000 100%);
+      min-height: 100vh;
+      overflow: hidden;
+      font-family: "Cormorant Garamond", serif;
+      color: var(--text);
+      position: relative;
+    }
+
+    /* Grain + lignes inquiétantes */
+    body::before {
+      content: "";
+      position: fixed;
+      inset: -40px;
+      pointer-events: none;
+      background:
+        repeating-linear-gradient(
+          to bottom,
+          rgba(255, 255, 255, 0.02) 0px,
+          rgba(255, 255, 255, 0.01) 2px,
+          rgba(0, 0, 0, 0.4) 4px
+        );
+      mix-blend-mode: soft-light;
+      opacity: 0.7;
+      animation: drift 35s linear infinite;
+      z-index: 1;
+    }
+
+    @keyframes drift {
+      0% { transform: translateY(0); }
+      100% { transform: translateY(200px); }
+    }
+
+    @keyframes breathe {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.005); }
+    }
+
+    @keyframes vignettePulse {
+      0%, 100% { opacity: 0.3; }
+      50% { opacity: 0.6; }
+    }
+
+    /* Vignette sombre qui pulse */
+    body::after {
+      content: "";
+      position: fixed;
+      inset: 0;
+      background: radial-gradient(circle at center, transparent 0%, rgba(0,0,0,0.9) 100%);
+      pointer-events: none;
+      z-index: 1;
+      animation: vignettePulse 8s ease-in-out infinite;
+    }
+
+    #scene {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+      animation: breathe 12s ease-in-out infinite;
+      cursor: crosshair;
+      z-index: 2;
+    }
+
+    /* Spirale centrale améliorée */
+    #spiral-bg {
+      position: absolute;
+      width: 420px;
+      height: 420px;
+      border-radius: 50%;
+      border: 3px solid rgba(176, 0, 32, 0.2);
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      box-shadow: 
+        0 0 80px rgba(176, 0, 32, 0.4),
+        inset 0 0 60px rgba(0,0,0,0.9);
+      opacity: 0.5;
+      overflow: visible;
+      pointer-events: none;
+    }
+
+    #spiral-bg::before,
+    #spiral-bg::after {
+      content: "";
+      position: absolute;
+      border-radius: 50%;
+      border: 2px dashed rgba(176, 0, 32, 0.3);
+    }
+
+    #spiral-bg::before {
+      inset: 22px;
+      animation: rotateReverse 30s linear infinite;
+    }
+
+    #spiral-bg::after {
+      inset: 60px;
+      border-style: dotted;
+      opacity: 0.7;
+      animation: rotateReverse 20s linear infinite;
+    }
+
+    @keyframes rotateSpiral {
+      0% { transform: translate(-50%, -50%) rotate(0deg); }
+      100% { transform: translate(-50%, -50%) rotate(720deg); }
+    }
+
+    @keyframes rotateReverse {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(-360deg); }
+    }
+
+    #spiral-bg {
+      animation: rotateSpiral 45s linear infinite;
+    }
+
+    /* Particules flottantes (veines, fragments) */
+    .particle {
+      position: absolute;
+      width: 2px;
+      height: 20px;
+      background: linear-gradient(to bottom, transparent, rgba(176, 0, 32, 0.3), transparent);
+      pointer-events: none;
+      opacity: 0;
+      animation: floatParticle 8s ease-in-out infinite;
+    }
+
+    @keyframes floatParticle {
+      0% { 
+        opacity: 0;
+        transform: translateY(100vh) rotate(0deg);
+      }
+      10% {
+        opacity: 0.6;
+      }
+      90% {
+        opacity: 0.6;
+      }
+      100% { 
+        opacity: 0;
+        transform: translateY(-20vh) rotate(720deg);
+      }
+    }
+
+    /* HUD amélioré */
+    #hud {
+      position: fixed;
+      top: 16px;
+      left: 18px;
+      z-index: 3;
+      font-family: "Roboto Mono", monospace;
+      font-size: 13px;
+      background: rgba(0, 0, 0, 0.85);
+      padding: 10px 14px;
+      border-radius: 4px;
+      border: 1px solid rgba(176, 0, 32, 0.6);
+      box-shadow: 0 0 20px rgba(176, 0, 32, 0.3);
+    }
+
+    #hud span {
+      color: var(--blood);
+      font-weight: bold;
+    }
+
+    #sanity-bar {
+      margin-top: 8px;
+      width: 150px;
+      height: 8px;
+      background: rgba(0, 0, 0, 0.6);
+      border: 1px solid rgba(176, 0, 32, 0.4);
+      border-radius: 2px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    #sanity-fill {
+      height: 100%;
+      background: linear-gradient(to right, #00ff00, #ffff00, #ff0000);
+      transition: width 0.3s ease;
+      box-shadow: 0 0 10px rgba(255, 0, 0, 0.5);
+    }
+
+    #hint {
+      position: fixed;
+      top: 16px;
+      right: 18px;
+      z-index: 3;
+      font-size: 13px;
+      font-family: "Cormorant Garamond", serif;
+      background: rgba(0, 0, 0, 0.85);
+      padding: 10px 14px;
+      border-radius: 4px;
+      border: 1px solid rgba(255,255,255,0.15);
+      max-width: 280px;
+      text-align: right;
+      line-height: 1.4;
+      box-shadow: 0 0 15px rgba(0,0,0,0.8);
+    }
+
+    /* Messages d'événements */
+    #event-message {
+      position: fixed;
+      bottom: 80px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 4;
+      font-family: "Cormorant Garamond", serif;
+      font-size: 18px;
+      background: rgba(176, 0, 32, 0.15);
+      padding: 12px 24px;
+      border-radius: 4px;
+      border: 1px solid rgba(176, 0, 32, 0.5);
+      color: var(--blood);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s;
+      text-align: center;
+      font-style: italic;
+      max-width: 500px;
+    }
+
+    #event-message.show {
+      opacity: 1;
+    }
+
+    /* ANIMATIONS paupières / iris */
+    @keyframes irisPulse {
+      0%, 100% {
+        transform: scale(1);
+        box-shadow: 0 0 18px rgba(176,0,32,0.9);
+      }
+      50% {
+        transform: scale(1.07);
+        box-shadow: 0 0 28px rgba(255,0,40,0.95);
+      }
+    }
+
+    @keyframes blinkTop {
+      0%, 82%, 100%   { transform: translateY(0); }
+      85%, 90%        { transform: translateY(40%); }
+    }
+
+    @keyframes blinkBottom {
+      0%, 82%, 100%   { transform: scaleY(-1) translateY(0); }
+      85%, 90%        { transform: scaleY(-1) translateY(-40%); }
+    }
+
+    @keyframes blinkTopAwake {
+      0%, 70%, 100%   { transform: translateY(0); }
+      73%, 78%        { transform: translateY(45%); }
+    }
+
+    @keyframes blinkBottomAwake {
+      0%, 70%, 100%   { transform: scaleY(-1) translateY(0); }
+      73%, 78%        { transform: scaleY(-1) translateY(-45%); }
+    }
+
+    @keyframes blinkTopCursed {
+      0%, 60%, 100%   { transform: translateY(0); }
+      63%, 68%        { transform: translateY(50%); }
+    }
+
+    @keyframes blinkBottomCursed {
+      0%, 60%, 100%   { transform: scaleY(-1) translateY(0); }
+      63%, 68%        { transform: scaleY(-1) translateY(-50%); }
+    }
+
+    /* ŒIL */
+    .eye {
+      position: absolute;
+      width: 90px;
+      height: 54px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 50% 50%, #fff 0%, #ccc 40%, #999 65%, #111 100%);
+      box-shadow:
+        0 0 30px rgba(0, 0, 0, 0.9),
+        0 0 12px rgba(176, 0, 32, 0.6);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      transform-origin: center;
+      transition: transform 0.2s ease-out, opacity 0.25s; 
+      overflow: hidden;
+      cursor: pointer;
+    }
+
+    .eye::before,
+    .eye::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      right: 0;
+      height: 40%;
+      background: radial-gradient(circle at 50% 0%, #111 0%, #050505 40%, transparent 100%);
+      opacity: 0.9;
+      pointer-events: none;
+    }
+
+    .eye::before {
+      top: -25%;
+      animation: blinkTop 7s ease-in-out infinite;
+    }
+
+    .eye::after {
+      bottom: -25%;
+      transform: scaleY(-1);
+      animation: blinkBottom 7s ease-in-out infinite;
+    }
+
+    .eye-ball {
+      position: relative;
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      background: radial-gradient(circle, #660000 0%, #210000 55%, #000 100%);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      box-shadow: 0 0 18px rgba(176,0,32,0.9);
+      animation: irisPulse 6s ease-in-out infinite;
+    }
+
+    .pupil {
+      position: relative;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: #000;
+      box-shadow: 0 0 18px rgba(255,255,255,0.25);
+    }
+
+    .pupil::after {
+      content: "";
+      position: absolute;
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.7);
+      top: 3px;
+      left: 4px;
+    }
+
+    /* Œil éveillé */
+    .eye.awake .eye-ball {
+      background: radial-gradient(circle, #9b0000 0%, #2b0000 55%, #000 100%);
+      box-shadow: 0 0 28px rgba(255,0,0,1);
+      animation-duration: 3.2s;
+    }
+
+    .eye.awake::before {
+      animation: blinkTopAwake 5s ease-in-out infinite;
+    }
+
+    .eye.awake::after {
+      animation: blinkBottomAwake 5s ease-in-out infinite;
+    }
+
+    /* Œil maudit (nouveau type) */
+    .eye.cursed {
+      width: 100px;
+      height: 60px;
+      filter: hue-rotate(120deg);
+    }
+
+    .eye.cursed .eye-ball {
+      background: radial-gradient(circle, #6600ff 0%, #1a0033 55%, #000 100%);
+      box-shadow: 0 0 35px rgba(150,0,255,1);
+      animation-duration: 2s;
+      width: 42px;
+      height: 42px;
+    }
+
+    .eye.cursed::before {
+      animation: blinkTopCursed 4s ease-in-out infinite;
+    }
+
+    .eye.cursed::after {
+      animation: blinkBottomCursed 4s ease-in-out infinite;
+    }
+
+    .eye.closed {
+      opacity: 0;
+      pointer-events: none;
+      transform: scale(0.7);
+    }
+
+    /* Effet de click sur œil */
+    @keyframes eyeHit {
+      0% { transform: scale(1); }
+      50% { transform: scale(0.8); filter: brightness(2); }
+      100% { transform: scale(0); opacity: 0; }
+    }
+
+    .eye.hit {
+      animation: eyeHit 0.3s ease-out forwards;
+    }
+
+    /* GAME OVER */
+    #game-over-overlay {
+      position: fixed;
+      inset: 0;
+      background: radial-gradient(circle at center, rgba(0,0,0,0.95) 0%, rgba(0,0,0,1) 60%);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      color: var(--text);
+      z-index: 5;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.5s;
+      text-align: center;
+      padding: 20px;
+    }
+
+    #game-over-overlay.show {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    #game-over-overlay h1 {
+      font-size: 48px;
+      letter-spacing: 0.3em;
+      margin-bottom: 18px;
+      color: var(--blood);
+      text-shadow: 0 0 20px rgba(176, 0, 32, 0.8);
+    }
+
+    #game-over-overlay p {
+      font-size: 17px;
+      max-width: 480px;
+      margin-bottom: 12px;
+      line-height: 1.6;
+    }
+
+    #stats {
+      font-family: "Roboto Mono", monospace;
+      font-size: 14px;
+      margin: 16px 0;
+      padding: 12px 20px;
+      background: rgba(176, 0, 32, 0.1);
+      border: 1px solid rgba(176, 0, 32, 0.3);
+      border-radius: 4px;
+    }
+
+    #restart {
+      margin-top: 10px;
+      font-family: "Roboto Mono", monospace;
+      font-size: 14px;
+      padding: 10px 20px;
+      border-radius: 3px;
+      border: 1px solid var(--blood);
+      background: transparent;
+      color: var(--text);
+      cursor: pointer;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      transition: all 0.3s;
+    }
+
+    #restart:hover {
+      background: var(--blood-soft);
+      box-shadow: 0 0 20px rgba(176, 0, 32, 0.5);
+    }
+
+  </style>
+</head>
+<body>
+
+  <div id="scene">
+    <div id="spiral-bg"></div>
+  </div>
+
+  <div id="hud">
+    yeux fermés : <span id="closed-count">0</span><br>
+    yeux ouverts : <span id="open-count">0</span> / <span id="max-eyes"></span><br>
+    <div id="sanity-bar">
+      <div id="sanity-fill" style="width: 100%;"></div>
+    </div>
+  </div>
+
+  <div id="hint">
+    Clique sur les yeux avant qu'ils n'atteignent la spirale.<br>
+    Les yeux maudits valent plus de points mais drainent ta santé mentale.
+  </div>
+
+  <div id="event-message"></div>
+
+  <div id="game-over-overlay">
+    <h1>GAME OVER</h1>
+    <p id="game-over-text"></p>
+    <div id="stats"></div>
+    <button id="restart">recommencer</button>
+  </div>
+
+  <script>
+    const scene = document.getElementById("scene");
+    const closedCountEl = document.getElementById("closed-count");
+    const openCountEl = document.getElementById("open-count");
+    const maxEyesEl = document.getElementById("max-eyes");
+    const sanityFill = document.getElementById("sanity-fill");
+    const overlay = document.getElementById("game-over-overlay");
+    const overlayText = document.getElementById("game-over-text");
+    const statsEl = document.getElementById("stats");
+    const restartBtn = document.getElementById("restart");
+    const eventMessage = document.getElementById("event-message");
+
+    // Musique d'ambiance
+    const backgroundMusic = new Audio();
+    backgroundMusic.src = "https://freesound.org/data/previews/580/580815_8636839-lq.mp3";
+    backgroundMusic.loop = true;
+    backgroundMusic.volume = 0.7;
+
+    let mouseX = window.innerWidth / 2;
+    let mouseY = window.innerHeight / 2;
+    const smoothingFactor = 0.15;
+
+    let eyes = [];
+    let closedCount = 0;
+    let openCount = 0;
+    let sanity = 100;
+    let score = 0;
+    let audioStarted = false;
+
+    const maxEyes = 12;
+    const spawnIntervalMs = 1200;
+    let spawnIntervalId = null;
+    let gameOver = false;
+    let difficulty = 1;
+
+    maxEyesEl.textContent = maxEyes;
+
+    // Créer des particules
+    function createParticles() {
+      for (let i = 0; i < 15; i++) {
+        setTimeout(() => {
+          const particle = document.createElement("div");
+          particle.classList.add("particle");
+          particle.style.left = `${Math.random() * 100}%`;
+          particle.style.animationDelay = `${Math.random() * 8}s`;
+          particle.style.animationDuration = `${6 + Math.random() * 6}s`;
+          scene.appendChild(particle);
+        }, i * 200);
+      }
+    }
+
+    createParticles();
+
+    document.addEventListener("mousemove", (e) => {
+      mouseX = e.clientX;
+      mouseY = e.clientY;
+    });
+
+    function showEvent(text) {
+      eventMessage.textContent = text;
+      eventMessage.classList.add("show");
+      setTimeout(() => {
+        eventMessage.classList.remove("show");
+      }, 2500);
+    }
+
+    function updateSanity(amount) {
+      sanity = Math.max(0, Math.min(100, sanity + amount));
+      sanityFill.style.width = `${sanity}%`;
+      
+      if (sanity <= 0 && !gameOver) {
+        triggerGameOver("Ta santé mentale s'est effondrée. Les yeux t'ont consumé de l'intérieur.");
+      } else if (sanity <= 25 && sanity > 0) {
+        showEvent("Tu sens ton esprit se fragmenter...");
+      }
+    }
+
+    function createEye() {
+      if (gameOver) return;
+
+      const eye = document.createElement("div");
+      eye.classList.add("eye");
+
+      // 20% de chance de créer un œil maudit
+      const isCursed = Math.random() < 0.2;
+      if (isCursed) {
+        eye.classList.add("cursed");
+      }
+
+      const eyeBall = document.createElement("div");
+      eyeBall.classList.add("eye-ball");
+
+      const pupil = document.createElement("div");
+      pupil.classList.add("pupil");
+
+      eyeBall.appendChild(pupil);
+      eye.appendChild(eyeBall);
+      scene.appendChild(eye);
+
+      const padding = 60;
+      const w = window.innerWidth;
+      const h = window.innerHeight;
+
+      let x = Math.random() * (w - 2 * padding) + padding;
+      let y = Math.random() * (h - 2 * padding) + padding;
+
+      eye.style.left = `${x}px`;
+      eye.style.top = `${y}px`;
+
+      const speedBase = (0.08 + Math.random() * 0.06) * difficulty;
+
+      const eyeData = {
+        el: eye,
+        pupil,
+        awake: false,
+        cursed: isCursed,
+        pupilX: 0,
+        pupilY: 0,
+        x,
+        y,
+        speedBase
+      };
+
+      eyes.push(eyeData);
+      openCount++;
+      updateHud();
+
+      const awakeTimeout = setTimeout(() => {
+        if (!gameOver && !eye.classList.contains("closed")) {
+          eye.classList.add("awake");
+          eyeData.awake = true;
+          if (!isCursed) {
+            showEvent("Un œil s'est éveillé...");
+          }
+          checkGameOver();
+        }
+      }, 3000 + Math.random() * 2500);
+
+      eyeData.awakeTimeout = awakeTimeout;
+
+      eye.addEventListener("click", () => {
+        if (gameOver || eye.classList.contains("closed")) return;
+        
+        // Démarrer la musique au premier clic
+        if (!audioStarted) {
+          backgroundMusic.play().then(() => {
+            audioStarted = true;
+          }).catch(err => console.log("Erreur audio:", err));
+        }
+        
+        eye.classList.add("hit");
+        clearTimeout(awakeTimeout);
+        
+        // Points et effets selon le type d'œil
+        if (isCursed) {
+          score += 3;
+          updateSanity(-8);
+          showEvent("Œil maudit fermé ! +3 points");
+        } else if (eyeData.awake) {
+          score += 2;
+          updateSanity(-3);
+        } else {
+          score += 1;
+          updateSanity(-1);
+        }
+        
+        setTimeout(() => {
+          eye.remove();
+        }, 300);
+        
+        openCount--;
+        closedCount++;
+        updateHud();
+      });
+    }
+
+    function updateHud() {
+      closedCountEl.textContent = closedCount;
+      openCountEl.textContent = openCount;
+      checkGameOver();
+    }
+
+    function checkGameOver() {
+      if (openCount >= maxEyes && !gameOver) {
+        triggerGameOver("Trop d'yeux ouverts à la fois. La spirale t'appelle désormais.");
+      }
+    }
+
+    function triggerGameOver(customText) {
+      if (gameOver) return;
+      gameOver = true;
+      clearInterval(spawnIntervalId);
+
+      // Arrêter la musique
+      backgroundMusic.pause();
+      backgroundMusic.currentTime = 0;
+
+      const textsFallback = [
+        "Tu en as fermé quelques-uns, mais les autres te regardaient déjà depuis l'intérieur.",
+        "Tu croyais les faire taire. Ils attendaient seulement que tu clignes des yeux.",
+        "Tu n'as pas perdu le jeu. Tu as simplement découvert que tu n'étais pas seul devant l'écran.",
+        "La spirale t'a accepté. Tu fais maintenant partie de son motif éternel.",
+        "Chaque œil que tu as fermé était une part de toi-même qui se dissolvait."
+      ];
+
+      overlayText.textContent = customText || textsFallback[Math.floor(Math.random() * textsFallback.length)];
+      
+      statsEl.innerHTML = `
+        Score final : <span style="color: var(--blood)">${score}</span><br>
+        Yeux fermés : ${closedCount}<br>
+        Santé mentale restante : ${sanity.toFixed(0)}%
+      `;
+      
+      overlay.classList.add("show");
+    }
+
+    function resetGame() {
+      gameOver = false;
+
+      eyes.forEach(e => {
+        clearTimeout(e.awakeTimeout);
+        e.el.remove();
+      });
+      eyes = [];
+      closedCount = 0;
+      openCount = 0;
+      sanity = 100;
+      score = 0;
+      difficulty = 1;
+      updateHud();
+      updateSanity(0);
+
+      overlay.classList.remove("show");
+
+      // Relancer la musique si elle a déjà été activée
+      if (audioStarted) {
+        backgroundMusic.currentTime = 0;
+        backgroundMusic.play().catch(err => console.log(err));
+      }
+
+      spawnIntervalId = setInterval(() => {
+        createEye();
+        // Augmenter progressivement la difficulté
+        if (closedCount > 0 && closedCount % 10 === 0) {
+          difficulty += 0.1;
+        }
+      }, spawnIntervalMs);
+      
+      for (let i = 0; i < 3; i++) createEye();
+    }
+
+    function animate() {
+      const centerX = window.innerWidth / 2;
+      const centerY = window.innerHeight / 2;
+      const spiralRadius = 140;
+
+      eyes.forEach((eyeData) => {
+        const rect = eyeData.el.getBoundingClientRect();
+        const eyeCenterX = rect.left + rect.width / 2;
+        const eyeCenterY = rect.top + rect.height / 2;
+
+        // mouvement vers la spirale
+        const dxCenter = centerX - eyeCenterX;
+        const dyCenter = centerY - eyeCenterY;
+        const distCenter = Math.sqrt(dxCenter * dxCenter + dyCenter * dyCenter) || 1;
+
+        const speedMultiplier = eyeData.cursed ? 1.8 : (eyeData.awake ? 2.5 : 1.4);
+        const speed = eyeData.speedBase * speedMultiplier;
+
+        eyeData.x += (dxCenter / distCenter) * speed * distCenter / 80;
+        eyeData.y += (dyCenter / distCenter) * speed * distCenter / 80;
+
+        eyeData.el.style.left = `${eyeData.x}px`;
+        eyeData.el.style.top = `${eyeData.y}px`;
+
+        // si trop proche du centre -> GAME OVER "spirale"
+        if (!gameOver && distCenter < spiralRadius) {
+          const msg = eyeData.cursed 
+            ? "Un œil maudit a atteint la spirale. Tu es maintenant lié à son motif éternel."
+            : "Un œil a atteint la spirale. Le centre t'a regardé en retour.";
+          triggerGameOver(msg);
+        }
+
+        // mouvement de la pupille vers la souris
+        const dxMouse = mouseX - eyeCenterX;
+        const dyMouse = mouseY - eyeCenterY;
+        const angle = Math.atan2(dyMouse, dxMouse);
+        const maxOffset = eyeData.cursed ? 11 : (eyeData.awake ? 9 : 7);
+
+        const targetX = Math.cos(angle) * maxOffset;
+        const targetY = Math.sin(angle) * maxOffset;
+
+        eyeData.pupilX += (targetX - eyeData.pupilX) * smoothingFactor;
+        eyeData.pupilY += (targetY - eyeData.pupilY) * smoothingFactor;
+
+        eyeData.pupil.style.transform = `translate(${eyeData.pupilX}px, ${eyeData.pupilY}px)`;
+      });
+
+      requestAnimationFrame(animate);
+    }
+
+    resetGame();
+    animate();
+
+    restartBtn.addEventListener("click", () => {
+      resetGame();
+    });
+  </script>
+
+</body>
+</html>
