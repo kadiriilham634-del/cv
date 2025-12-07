@@ -1,1 +1,161 @@
 
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Test 5 : Mouvement et Tir</title>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+  
+  <style>
+    :root {
+      --bg: #000;
+      --red: #ff0000;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: flex; 
+      flex-direction: column; /* Permet d'ajouter la ligne d'aide en bas */
+      justify-content: center;
+      align-items: center;
+      background-color: var(--bg);
+      font-family: 'Press Start 2P', monospace;
+      color: var(--red);
+    }
+
+    #game-container {
+      width: 600px;
+      height: 600px;
+      border: 3px solid var(--red);
+      box-shadow: 0 0 25px var(--red);
+      position: relative; 
+      overflow: hidden;
+      background: #000;
+    }
+    
+    #player {
+      width: 30px;
+      height: 30px;
+      background: var(--red);
+      position: absolute; 
+      bottom: 20px; 
+      left: 50%;
+      transform: translateX(-50%);
+      box-shadow: 0 0 10px var(--red);
+    }
+    
+    #hud {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      font-size: 14px;
+      text-shadow: 0 0 5px var(--red);
+    }
+
+    /* Style du projectile */
+    .bullet {
+      width: 4px;
+      height: 10px;
+      background: var(--red);
+      position: absolute;
+      box-shadow: 0 0 5px var(--red);
+    }
+    
+    #hint {
+        margin-top: 15px;
+        font-size: 12px;
+        text-shadow: 0 0 5px var(--red);
+    }
+  </style>
+</head>
+<body>
+  <div id="game-container">
+    <div id="player"></div>
+    <div id="hud">SCORE: 0</div>
+  </div>
+  
+  <div id="hint">
+    Flèches Gauche/Droite pour bouger · Espace pour tirer
+  </div>
+
+  <script>
+    const game = document.getElementById('game-container');
+    const player = document.getElementById('player');
+
+    // Variables du Jeu
+    const gameWidth = 600;
+    const playerSpeed = 6;
+    const bulletSpeed = 8;
+    
+    let playerX = gameWidth / 2 - 15; // Position de départ
+    let keys = {}; // Pour suivre l'état des touches
+    let bullets = []; // Tableau des projectiles
+    let lastShootTime = 0; // Pour le délai entre les tirs
+    const shootCooldown = 200; // 0.2 seconde entre les tirs
+
+    // Met à jour la position du joueur dans le DOM
+    function updatePlayerPosition() {
+      player.style.left = playerX + 'px';
+    }
+
+    // Crée un projectile et l'ajoute au jeu
+    function shoot() {
+      const now = performance.now();
+      // Limiter la cadence de tir
+      if (now - lastShootTime < shootCooldown) return;
+      lastShootTime = now;
+
+      const bullet = document.createElement('div');
+      bullet.classList.add('bullet');
+      
+      const bulletX = playerX + 13; // Centre du joueur
+      const bulletY = 560; // Juste au-dessus du joueur
+
+      bullet.style.left = bulletX + 'px';
+      bullet.style.top = bulletY + 'px';
+      game.appendChild(bullet);
+
+      // Enregistrer le projectile dans le tableau pour la boucle de jeu
+      bullets.push({ el: bullet, y: bulletY });
+    }
+
+    // Boucle de Jeu principale (appelée 60 fois par seconde)
+    function gameLoop() {
+      // 1. Gérer le Mouvement du Joueur
+      if (keys['ArrowLeft']) playerX = Math.max(0, playerX - playerSpeed);
+      if (keys['ArrowRight']) playerX = Math.min(gameWidth - 30, playerX + playerSpeed);
+      updatePlayerPosition();
+      
+      // 2. Gérer le Tir
+      if (keys[' ']) shoot();
+
+      // 3. Mouvement des Projectiles
+      bullets.forEach((b, i) => {
+        b.y -= bulletSpeed; // Déplacement vers le haut
+        b.el.style.top = b.y + 'px';
+        
+        // Nettoyage des projectiles hors écran
+        if (b.y < -20) {
+          b.el.remove();
+          bullets.splice(i, 1); // Retire du tableau
+        }
+      });
+
+      // Rappel de la boucle pour l'image suivante (fluidité)
+      requestAnimationFrame(gameLoop);
+    }
+
+    // Gestion des événements du clavier
+    document.addEventListener('keydown', e => { 
+        if (e.key === ' ') e.preventDefault(); // Empêche la barre d'espace de faire défiler la page
+        keys[e.key] = true; 
+    });
+    document.addEventListener('keyup', e => { keys[e.key] = false; });
+    
+    // Initialisation et démarrage du jeu
+    updatePlayerPosition();
+    requestAnimationFrame(gameLoop); 
+  </script>
+</body>
+</html>
