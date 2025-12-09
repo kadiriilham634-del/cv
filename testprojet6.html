@@ -1,0 +1,749 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Le Juste Prix (Plus ou Moins) - Version Finale</title> 
+    
+    <style>
+        /* Styles de base (Mode Clair) */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            text-align: center;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #2d3748;
+            padding-top: 50px;
+            transition: background 0.3s, color 0.3s;
+            min-height: 100vh;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 450px; 
+            margin: 0 auto;
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 20px; 
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3); 
+            transition: background-color 0.3s, box-shadow 0.3s;
+            position: relative;
+        }
+
+        h1 { 
+            color: #667eea; 
+            margin-bottom: 20px;
+            font-size: 1.8em;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        h2 { color: #4a5568; font-size: 1.4em; }
+
+        input[type="number"], select {
+            padding: 14px; 
+            margin: 10px 0;
+            width: 100%; 
+            box-sizing: border-box; 
+            border-radius: 12px; 
+            border: 2px solid #e2e8f0;
+            font-size: 1.1em;
+            background-color: #f7fafc;
+            color: #2d3748;
+            transition: all 0.3s;
+        }
+        
+        input[type="number"]:focus, select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        
+        /* Cache les flèches (spinners) de l'input type="number" */
+        input[type="number"]::-webkit-inner-spin-button,
+        input[type="number"]::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        input[type="number"] {
+            -moz-appearance: textfield; 
+        }
+
+        /* Styles généraux des boutons */
+        button {
+            padding: 14px 20px;
+            margin: 10px 0; 
+            font-size: 1.1em;
+            border: none;
+            border-radius: 12px;
+            font-weight: bold; 
+            cursor: pointer;
+            width: 100%;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            transition: all 0.3s;
+        }
+        
+        /* Bouton principal (Démarrer/Deviner) */
+        button[type="submit"], #selectionDifficulte button:not(#boutonTheme) {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        button[type="submit"]:hover, #selectionDifficulte button:not(#boutonTheme):hover { 
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        }
+        
+        /* Bouton Rejouer */
+        #boutonRejouer {
+            background: linear-gradient(135deg, #f6ad55 0%, #ed8936 100%);
+            color: white;
+        }
+        #boutonRejouer:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(237, 137, 54, 0.4);
+        }
+
+        .resultat {
+            margin-top: 25px; 
+            padding: 20px; 
+            min-height: 50px; 
+            font-size: 1.3em;
+            font-weight: 600; 
+            border-radius: 12px; 
+            transition: all 0.5s;
+        }
+
+        .historique {
+            margin-top: 20px; 
+            text-align: left; 
+            padding: 15px 0; 
+            border-top: 2px dashed #e2e8f0;
+            font-size: 1em; 
+            color: #718096;
+        }
+        
+        #listeHistorique {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px 15px;
+        }
+        .historique strong {
+            display: block;
+            margin-bottom: 5px;
+            color: #4a5568;
+        }
+        
+        #meilleurScore { 
+            font-weight: bold; 
+            color: #ed8936; 
+            display: block; 
+            margin-top: 5px; 
+        }
+
+        footer {
+            margin-top: 30px;
+            padding-top: 15px;
+            border-top: 2px solid #e2e8f0;
+            text-align: center; 
+        }
+        
+        #boutonTheme { 
+            padding: 8px 15px; 
+            background-color: #edf2f7; 
+            color: #2d3748; 
+            border: 2px solid #cbd5e0; 
+            border-radius: 25px;
+            font-size: 0.9em;
+            width: auto;
+            display: inline-block;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        #boutonTheme:hover {
+            background-color: #e2e8f0;
+            transform: scale(1.05);
+        }
+        
+        /* Scores avec style subtil et élégant */
+        .score-positif { 
+            color: #667eea; 
+            font-weight: 600; 
+            margin-left: 8px;
+            font-size: 0.95em;
+        }
+        
+        .score-negatif { 
+            color: #a0aec0;
+            font-weight: 500; 
+            margin-left: 8px;
+            font-size: 0.9em;
+            font-style: italic;
+        }
+        
+        /* Palette harmonieuse pour Froid/Tiède/Proche */
+        .froid { 
+            background: linear-gradient(135deg, #e0f2fe 0%, #bae6fd 100%);
+            color: #0c4a6e;
+            border-left: 4px solid #0284c7;
+        } 
+        .tiede { 
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+            color: #78350f;
+            border-left: 4px solid #f59e0b;
+        } 
+        .proche { 
+            background: linear-gradient(135deg, #ffe4e6 0%, #fecdd3 100%);
+            color: #881337;
+            border-left: 4px solid #e11d48;
+        } 
+
+        #barreProgression { 
+            height: 14px; 
+            margin-bottom: 20px; 
+            border-radius: 8px;
+            background-color: #e2e8f0;
+        }
+        #barreProgression::-webkit-progress-value { 
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            border-radius: 8px;
+        } 
+        #barreProgression::-moz-progress-bar { 
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            border-radius: 8px;
+        }
+
+        /* Mode sombre */
+        .dark-mode {
+            background: linear-gradient(135deg, #1e1b4b 0%, #312e81 100%) !important;
+            color: #e2e8f0 !important;
+        }
+
+        .dark-mode .container {
+            background-color: #1e293b !important;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
+        }
+        
+        .dark-mode h1 { color: #a78bfa; }
+        .dark-mode h2 { color: #cbd5e0; }
+
+        .dark-mode input[type="number"], .dark-mode select {
+            background-color: #0f172a;
+            border-color: #334155;
+            color: #e2e8f0;
+        }
+        
+        .dark-mode input[type="number"]:focus, .dark-mode select:focus {
+            border-color: #a78bfa;
+            box-shadow: 0 0 0 3px rgba(167, 139, 250, 0.1);
+        }
+        
+        .dark-mode #resultat {
+            color: #e2e8f0;
+        }
+        
+        .dark-mode .historique {
+            color: #94a3b8;
+            border-top-color: #334155;
+        }
+        
+        .dark-mode .historique strong {
+            color: #cbd5e0;
+        }
+        
+        .dark-mode .score-positif {
+            color: #a78bfa;
+        }
+        
+        .dark-mode .score-negatif {
+            color: #64748b;
+        }
+        
+        .dark-mode .froid {
+            background: linear-gradient(135deg, #0c4a6e 0%, #075985 100%);
+            color: #bae6fd;
+            border-left: 4px solid #38bdf8;
+        }
+        
+        .dark-mode .tiede {
+            background: linear-gradient(135deg, #78350f 0%, #92400e 100%);
+            color: #fde68a;
+            border-left: 4px solid #fbbf24;
+        }
+        
+        .dark-mode .proche {
+            background: linear-gradient(135deg, #881337 0%, #9f1239 100%);
+            color: #fecdd3;
+            border-left: 4px solid #fb7185;
+        }
+        
+        .dark-mode #boutonTheme {
+            background-color: #0f172a;
+            color: #e2e8f0;
+            border-color: #334155;
+        }
+        .dark-mode #boutonTheme:hover {
+            background-color: #334155;
+        }
+        
+        .dark-mode button[type="submit"], .dark-mode #selectionDifficulte button:not(#boutonTheme) {
+             background: linear-gradient(135deg, #a78bfa 0%, #8b5cf6 100%);
+             color: #0f172a;
+        }
+        .dark-mode button[type="submit"]:hover, .dark-mode #selectionDifficulte button:not(#boutonTheme):hover {
+             box-shadow: 0 6px 20px rgba(167, 139, 250, 0.4);
+        }
+        .dark-mode #boutonRejouer {
+            background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+            color: #0f172a;
+        }
+        .dark-mode #boutonRejouer:hover {
+            box-shadow: 0 6px 20px rgba(251, 191, 36, 0.4);
+        }
+
+        .dark-mode #barreProgression { 
+            background-color: #334155;
+        }
+        .dark-mode #barreProgression::-webkit-progress-value { 
+            background: linear-gradient(90deg, #a78bfa 0%, #8b5cf6 100%);
+        }
+        .dark-mode #barreProgression::-moz-progress-bar { 
+            background: linear-gradient(90deg, #a78bfa 0%, #8b5cf6 100%);
+        }
+        
+        .historique span { 
+            font-weight: bold;
+            color: #2d3748;
+            padding: 4px 8px;
+            border-radius: 6px;
+            background-color: #edf2f7;
+        }
+        .dark-mode .historique span {
+            color: #e2e8f0;
+            background-color: #334155;
+        }
+        
+        .note-audio {
+            font-size: 0.8em;
+            color: #a0aec0;
+            margin-top: 10px;
+        }
+        .dark-mode .note-audio {
+            color: #64748b;
+        }
+        
+        /* Amélioration des messages de résultat */
+        .resultat.message-bienvenue {
+            background: linear-gradient(135deg, #ede9fe 0%, #ddd6fe 100%);
+            color: #5b21b6;
+            border-left: 4px solid #8b5cf6;
+        }
+        
+        .dark-mode .resultat.message-bienvenue {
+            background: linear-gradient(135deg, #4c1d95 0%, #5b21b6 100%);
+            color: #ddd6fe;
+            border-left: 4px solid #a78bfa;
+        }
+        
+        .resultat.message-victoire {
+            background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+            color: #065f46;
+            border-left: 4px solid #10b981;
+        }
+        
+        .dark-mode .resultat.message-victoire {
+            background: linear-gradient(135deg, #065f46 0%, #047857 100%);
+            color: #a7f3d0;
+            border-left: 4px solid #34d399;
+        }
+        
+        .resultat.message-defaite {
+            background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+            color: #991b1b;
+            border-left: 4px solid #ef4444;
+        }
+        
+        .dark-mode .resultat.message-defaite {
+            background: linear-gradient(135deg, #7f1d1d 0%, #991b1b 100%);
+            color: #fecaca;
+            border-left: 4px solid #f87171;
+        }
+        
+        .resultat.message-erreur {
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+            color: #78350f;
+            border-left: 4px solid #f59e0b;
+        }
+        
+        .dark-mode .resultat.message-erreur {
+            background: linear-gradient(135deg, #78350f 0%, #92400e 100%);
+            color: #fde68a;
+            border-left: 4px solid #fbbf24;
+        }
+    </style>
+</head>
+<body onload="chargerTheme(); mettreAJourAffichageRecord();">
+
+<div class="container">
+    
+    <h1 style="margin-top: 0;">🎯 Le Juste Prix (Plus ou Moins)</h1>
+
+    <div id="selectionDifficulte">
+        <h2>Choisissez la Difficulté</h2>
+        <select id="selecteurDifficulte">
+            <option value="facile">Facile (1-50, 8 essais)</option>
+            <option value="moyen" selected>Moyen (1-100, 7 essais)</option>
+            <option value="difficile">Difficile (1-200, 6 essais)</option>
+        </select>
+        
+        <p style="margin-top: 20px;">
+            <span id="meilleurScore"></span>
+        </p>
+
+        <button onclick="demarrerJeu()">Démarrer la Partie</button>
+        
+        <p class="note-audio">
+            🎧 Pour activer les sons : cliquez sur "Mode Sombre" ou "Démarrer la Partie"
+        </p>
+    </div>
+
+    <div id="jeu" style="display: none;">
+        <p>Devinez le nombre secret <span id="plageNombres"></span>.</p>
+        
+        <form onsubmit="verifierProposition(); return false;">
+            <input type="number" id="devinette" placeholder="Entrez votre proposition" required>
+            <button type="submit">Deviner</button>
+        </form>
+
+        <div id="resultat" class="resultat"></div>
+
+        <p>Tentatives restantes : <span id="tentativesRestantes"></span></p>
+
+        <progress id="barreProgression" value="0" max="0" style="width: 100%;"></progress>
+
+        <div class="historique">
+            <strong>Historique des propositions :</strong>
+            <div id="listeHistorique">Aucune tentative.</div>
+        </div>
+
+        <button id="boutonRejouer" onclick="reinitialiserJeu()" style="display: none;">Rejouer</button>
+    </div>
+
+    <footer>
+        <button onclick="basculerModeSombre()" id="boutonTheme">
+            🌙 Mode Sombre
+        </button>
+    </footer>
+
+</div>
+
+<script>
+    const NIVEAUX_DIFFICULTE = {
+        facile: { min: 1, max: 50, tentatives: 8 }, 
+        moyen: { min: 1, max: 100, tentatives: 7 },
+        difficile: { min: 1, max: 200, tentatives: 6 }
+    };
+
+    const KEY_MEILLEUR_SCORE = 'meilleurScoreJustePrix';
+    const KEY_THEME = 'themeMode';
+
+    let nombreSecret;
+    let tentativesRestantes;
+    let MAX_TENTATIVES;
+    let borneMin; 
+    let borneMax; 
+    let jeuTermine = false;
+
+    /* --- Web Audio API --- */
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    let audioUnlocked = false;
+
+    function unlockAudio() {
+        if (audioUnlocked) return;
+        if (audioCtx.state === 'suspended') {
+            audioCtx.resume().then(() => {
+                audioUnlocked = true;
+                jouerBip(600, 100, 0.2, 'sine');
+            }).catch(e => console.error("Échec du déblocage audio:", e));
+        } else {
+            audioUnlocked = true;
+        }
+    }
+
+    function jouerBip(frequence = 600, dureeMs = 150, volume = 0.3, type = 'sine') {
+        if (!audioUnlocked) return; 
+        
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        const now = audioCtx.currentTime;
+        const dureeSec = dureeMs / 1000;
+
+        osc.type = type;
+        osc.frequency.setValueAtTime(frequence, now);
+
+        gain.gain.setValueAtTime(0, now);
+        gain.gain.linearRampToValueAtTime(volume, now + 0.01);
+        gain.gain.linearRampToValueAtTime(0, now + dureeSec);
+
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+
+        osc.start(now);
+        osc.stop(now + dureeSec);
+    }
+
+    /* --- Mode sombre --- */
+    function basculerModeSombre() {
+        unlockAudio();
+        jouerBip(700, 150, 0.25, 'sine');
+        
+        const body = document.body;
+        const bouton = document.getElementById('boutonTheme');
+
+        body.classList.toggle('dark-mode');
+
+        const estSombre = body.classList.contains('dark-mode');
+        bouton.textContent = estSombre ? '☀️ Mode Clair' : '🌙 Mode Sombre';
+        localStorage.setItem(KEY_THEME, estSombre ? 'sombre' : 'clair');
+    }
+
+    function chargerTheme() {
+        const themeSauvegarde = localStorage.getItem(KEY_THEME);
+        const bouton = document.getElementById('boutonTheme');
+        if (!bouton) return; 
+
+        if (themeSauvegarde === 'sombre') {
+            document.body.classList.add('dark-mode');
+            bouton.textContent = '☀️ Mode Clair';
+        } else {
+            bouton.textContent = '🌙 Mode Sombre';
+        }
+    }
+
+    /* --- Score persistant --- */
+    function obtenirMeilleurScore() {
+        const scoreStocke = localStorage.getItem(KEY_MEILLEUR_SCORE);
+        return scoreStocke ? parseInt(scoreStocke) : Infinity;
+    }
+
+    function mettreAJourAffichageRecord() {
+        const meilleurScore = obtenirMeilleurScore();
+        const elementRecord = document.getElementById('meilleurScore');
+
+        if (!elementRecord) return;
+
+        if (meilleurScore === Infinity) {
+            elementRecord.innerHTML = "Aucun record encore établi.";
+        } else {
+            elementRecord.innerHTML = `Record actuel : <strong>${meilleurScore}</strong> tentatives 🏆`;
+        }
+    }
+
+    /* --- Démarrage / Initialisation --- */
+    function demarrerJeu() {
+        unlockAudio(); 
+        // Son de démarrage : arpège joyeux
+        jouerBip(523, 100, 0.25, 'sine'); // Do
+        setTimeout(() => jouerBip(659, 100, 0.25, 'sine'), 110); // Mi
+        setTimeout(() => jouerBip(784, 150, 0.28, 'sine'), 220); // Sol
+        
+        const selecteur = document.getElementById('selecteurDifficulte');
+        const niveau = selecteur.value;
+        
+        borneMin = NIVEAUX_DIFFICULTE[niveau].min;
+        borneMax = NIVEAUX_DIFFICULTE[niveau].max;
+        
+        const MAX_GENERATION = borneMax;
+        MAX_TENTATIVES = NIVEAUX_DIFFICULTE[niveau].tentatives;
+        
+        document.getElementById('selectionDifficulte').style.display = 'none';
+        document.getElementById('jeu').style.display = 'block';
+
+        nombreSecret = Math.floor(Math.random() * MAX_GENERATION) + 1;
+        
+        initialiserJeu();
+    }
+
+    function initialiserJeu() {
+        tentativesRestantes = MAX_TENTATIVES;
+        jeuTermine = false;
+
+        mettreAJourAffichageRecord(); 
+        mettreAJourAffichageBornes(); 
+        
+        const input = document.getElementById('devinette');
+        const resultatDiv = document.getElementById('resultat');
+
+        input.value = '';
+        input.disabled = false;
+        input.focus();
+        
+        resultatDiv.className = 'resultat message-bienvenue'; 
+        resultatDiv.style.backgroundColor = '';
+        resultatDiv.innerHTML = "Bonne chance ! 🎯";
+        
+        document.getElementById('tentativesRestantes').textContent = tentativesRestantes;
+        
+        const barre = document.getElementById('barreProgression');
+        barre.max = MAX_TENTATIVES;
+        barre.value = MAX_TENTATIVES;
+
+        document.getElementById('listeHistorique').innerHTML = 'Aucune tentative.'; 
+        document.getElementById('boutonRejouer').style.display = 'none';
+        
+        input.min = "1";
+        input.max = NIVEAUX_DIFFICULTE[document.getElementById('selecteurDifficulte').value].max.toString();
+    }
+
+    function mettreAJourAffichageBornes() {
+        document.getElementById('plageNombres').innerHTML = `entre <strong>${borneMin}</strong> et <strong>${borneMax}</strong>`;
+    }
+
+    /* --- Vérification d'une proposition --- */
+    function verifierProposition() {
+        if (jeuTermine) return;
+
+        jouerBip(650, 80, 0.2, 'sine');
+
+        const inputElement = document.getElementById('devinette');
+        const devinette = parseInt(inputElement.value);
+        const resultatDiv = document.getElementById('resultat');
+        const niveauSelectionne = document.getElementById('selecteurDifficulte').value;
+
+        const maxInitial = NIVEAUX_DIFFICULTE[niveauSelectionne].max;
+        if (isNaN(devinette) || devinette < 1 || devinette > maxInitial) {
+            resultatDiv.innerHTML = `🚫 Veuillez entrer un nombre valide dans la plage initiale (1 - ${maxInitial}).`;
+            resultatDiv.className = 'resultat message-erreur';
+            resultatDiv.style.backgroundColor = ''; 
+            return;
+        }
+        
+        if (devinette < borneMin || devinette > borneMax) {
+            resultatDiv.innerHTML = `⚠️ Ce nombre est en dehors de la plage de recherche actuelle (${borneMin} à ${borneMax})!`;
+            resultatDiv.className = 'resultat message-erreur';
+            resultatDiv.style.backgroundColor = ''; 
+            inputElement.value = '';
+            inputElement.focus();
+            return;
+        }
+
+        tentativesRestantes--;
+        
+        const listeHistorique = document.getElementById('listeHistorique');
+        const tentativesUtilisees = MAX_TENTATIVES - tentativesRestantes; 
+        document.getElementById('tentativesRestantes').textContent = tentativesRestantes;
+        document.getElementById('barreProgression').value = tentativesRestantes;
+
+        let scoreDuCoup = 0;
+        let scoreAffichage = '';
+        let classeIndice = '';
+        let messagePrincipal = '';
+        
+        if (devinette === nombreSecret) {
+
+            // Victoire : mélodie joyeuse
+            jouerBip(523, 150, 0.28, 'sine'); // Do
+            setTimeout(() => jouerBip(659, 150, 0.28, 'sine'), 150); // Mi
+            setTimeout(() => jouerBip(784, 150, 0.28, 'sine'), 300); // Sol
+            setTimeout(() => jouerBip(1047, 300, 0.32, 'sine'), 450); // Do aigu
+            
+            const meilleurScoreActuel = obtenirMeilleurScore();
+            let recordMessage = '';
+
+            if (tentativesUtilisees < meilleurScoreActuel) {
+                localStorage.setItem(KEY_MEILLEUR_SCORE, tentativesUtilisees);
+                recordMessage = ` <br>🌟 NOUVEAU RECORD ! (${tentativesUtilisees} tentatives)`;
+                mettreAJourAffichageRecord(); 
+            }
+
+            resultatDiv.innerHTML = `🥳 <strong>VICTOIRE !</strong> Le juste prix était ${nombreSecret} !${recordMessage}`;
+            resultatDiv.className = 'resultat message-victoire';
+            resultatDiv.style.backgroundColor = ''; 
+            
+            terminerJeu();
+        } else if (tentativesRestantes === 0) {
+
+            // Défaite : mélodie triste
+            jouerBip(392, 200, 0.25, 'sine'); // Sol
+            setTimeout(() => jouerBip(349, 200, 0.25, 'sine'), 220); // Fa
+            setTimeout(() => jouerBip(330, 200, 0.25, 'sine'), 440); // Mi
+            setTimeout(() => jouerBip(294, 400, 0.25, 'sine'), 660); // Ré
+
+            resultatDiv.innerHTML = `😭 <strong>DÉFAITE !</strong> Le nombre secret était ${nombreSecret}.`;
+            resultatDiv.className = 'resultat message-defaite';
+            resultatDiv.style.backgroundColor = ''; 
+            terminerJeu();
+        } else {
+            const distance = Math.abs(devinette - nombreSecret);
+            let indiceChaleur = "";
+
+            if (distance <= 3) {
+                indiceChaleur = "🔥 Très Proche";
+                classeIndice = 'proche';
+                scoreDuCoup = 3; 
+                // Son chaud : notes montantes rapides
+                jouerBip(800, 100, 0.25, 'sine');
+                setTimeout(() => jouerBip(1000, 100, 0.25, 'sine'), 110);
+            } else if (distance <= 10) {
+                indiceChaleur = "🌡️ Tiède";
+                classeIndice = 'tiede';
+                scoreDuCoup = 1;
+                // Son tiède : note moyenne
+                jouerBip(600, 150, 0.22, 'sine');
+            } else {
+                indiceChaleur = "❄️ Froid";
+                classeIndice = 'froid';
+                scoreDuCoup = -1;
+                // Son froid : notes descendantes
+                jouerBip(500, 100, 0.2, 'sine');
+                setTimeout(() => jouerBip(400, 120, 0.2, 'sine'), 110);
+            }
+
+            resultatDiv.className = 'resultat ' + classeIndice;
+            resultatDiv.style.backgroundColor = ''; 
+
+            if (scoreDuCoup >= 0) {
+                scoreAffichage = `<span class="score-positif">+${scoreDuCoup}</span>`;
+            } else {
+                scoreAffichage = ``;
+            }
+            
+            if (devinette < nombreSecret) {
+                messagePrincipal = `C'est <strong>PLUS</strong> ⬆️ ${indiceChaleur} ${scoreAffichage}`;
+                if (devinette + 1 > borneMin) {
+                    borneMin = devinette + 1;
+                    mettreAJourAffichageBornes();
+                }
+            } else {
+                messagePrincipal = `C'est <strong>MOINS</strong> ⬇️ ${indiceChaleur} ${scoreAffichage}`;
+                if (devinette - 1 < borneMax) {
+                    borneMax = devinette - 1;
+                    mettreAJourAffichageBornes();
+                }
+            }
+            resultatDiv.innerHTML = messagePrincipal; 
+        }
+        
+        const nouvelleEntreeHTML = `<div><span>${devinette}</span> ${scoreAffichage}</div>`; 
+
+        if (listeHistorique.innerHTML.includes('Aucune tentative.')) {
+            listeHistorique.innerHTML = nouvelleEntreeHTML;
+        } else {
+            listeHistorique.innerHTML += nouvelleEntreeHTML;
+        }
+
+        inputElement.value = '';
+        inputElement.focus();
+    }
+
+    /* --- Fin de partie / réinitialisation --- */
+    function terminerJeu() {
+        jeuTermine = true;
+        document.getElementById('devinette').disabled = true;
+        document.getElementById('boutonRejouer').style.display = 'block';
+    }
+
+    function reinitialiserJeu() {
+        document.getElementById('selectionDifficulte').style.display = 'block';
+        document.getElementById('jeu').style.display = 'none';
+        mettreAJourAffichageRecord(); 
+    }
+</script>
+
+</body>
+</html>
