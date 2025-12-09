@@ -1,490 +1,171 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8">
-  <title>Les yeux — mini jeu Junji Ito</title>
-
-  <!-- Police un peu élégante / morbide -->
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600&family=Roboto+Mono:wght@300;400&display=swap" rel="stylesheet">
-
-  <style>
-    :root {
-      --bg: #050505;
-      --blood: #b00020;
-      --blood-soft: #4b0010;
-      --text: #f5f5f5;
-    }
-
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-
-    body {
-      background: radial-gradient(circle at center, #141414 0%, #050505 55%, #000 100%);
-      min-height: 100vh;
-      overflow: hidden;
-      font-family: "Cormorant Garamond", serif;
-      color: var(--text);
-      position: relative;
-    }
-
-    /* Grain + lignes inquiétantes */
-    body::before {
-      content: "";
-      position: fixed;
-      inset: -40px;
-      pointer-events: none;
-      background:
-        repeating-linear-gradient(
-          to bottom,
-          rgba(255, 255, 255, 0.02) 0px,
-          rgba(255, 255, 255, 0.01) 2px,
-          rgba(0, 0, 0, 0.4) 4px
-        );
-      mix-blend-mode: soft-light;
-      opacity: 0.7;
-      animation: drift 35s linear infinite;
-      z-index: 1;
-    }
-
-    @keyframes drift {
-      0% { transform: translateY(0); }
-      100% { transform: translateY(200px); }
-    }
-
-    /* Légère “respiration” globale */
-    @keyframes breathe {
-      0%, 100% { transform: scale(1); }
-      50% { transform: scale(1.01); }
-    }
-
-    #scene {
-      position: relative;
-      width: 100vw;
-      height: 100vh;
-      overflow: hidden;
-      animation: breathe 12s ease-in-out infinite;
-      cursor: crosshair;
-      z-index: 2;
-    }
-
-    /* Spirale fantôme au centre, Junji Ito */
-    #spiral-bg {
-      position: absolute;
-      width: 420px;
-      height: 420px;
-      border-radius: 50%;
-      border: 2px solid rgba(176, 0, 32, 0.15);
-      left: 50%;
-      top: 50%;
-      transform: translate(-50%, -50%);
-      box-shadow: 0 0 80px rgba(0,0,0,0.9);
-      opacity: 0.4;
-      overflow: visible;
-      pointer-events: none;
-    }
-
-    #spiral-bg::before,
-    #spiral-bg::after {
-      content: "";
-      position: absolute;
-      inset: 22px;
-      border-radius: 50%;
-      border: 2px dashed rgba(176, 0, 32, 0.3);
-    }
-
-    #spiral-bg::after {
-      inset: 60px;
-      border-style: dotted;
-      opacity: 0.7;
-    }
-
-    @keyframes rotateSpiral {
-      0% { transform: translate(-50%, -50%) rotate(0deg); }
-      100% { transform: translate(-50%, -50%) rotate(720deg); }
-    }
-
-    #spiral-bg {
-      animation: rotateSpiral 45s linear infinite;
-    }
-
-    /* HUD */
-    #hud {
-      position: fixed;
-      top: 16px;
-      left: 18px;
-      z-index: 3;
-      font-family: "Roboto Mono", monospace;
-      font-size: 13px;
-      background: rgba(0, 0, 0, 0.7);
-      padding: 8px 12px;
-      border-radius: 4px;
-      border: 1px solid rgba(176, 0, 32, 0.5);
-      box-shadow: 0 0 18px rgba(0,0,0,0.8);
-    }
-
-    #hud span {
-      color: var(--blood);
-    }
-
-    #hint {
-      position: fixed;
-      top: 16px;
-      right: 18px;
-      z-index: 3;
-      font-size: 13px;
-      font-family: "Cormorant Garamond", serif;
-      background: rgba(0, 0, 0, 0.65);
-      padding: 8px 12px;
-      border-radius: 4px;
-      border: 1px solid rgba(255,255,255,0.1);
-      max-width: 260px;
-      text-align: right;
-      line-height: 1.3;
-    }
-
-    /* Un œil */
-    .eye {
-      position: absolute;
-      width: 90px;
-      height: 54px;
-      border-radius: 50%;
-      background: radial-gradient(circle at 50% 50%, #fff 0%, #ccc 40%, #999 65%, #111 100%);
-      box-shadow:
-        0 0 30px rgba(0, 0, 0, 0.9),
-        0 0 12px rgba(176, 0, 32, 0.6);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      transform-origin: center;
-      transition: transform 0.2s ease-out, opacity 0.25s;
-      overflow: hidden;
-      cursor: pointer;
-      animation: eyePulse 6s ease-in-out infinite;
-    }
-
-    @keyframes eyePulse {
-      0%, 100% { transform: scale(1); }
-      50% { transform: scale(1.04); }
-    }
-
-    /* paupières */
-    .eye::before,
-    .eye::after {
-      content: "";
-      position: absolute;
-      left: 0;
-      right: 0;
-      height: 40%;
-      background: radial-gradient(circle at 50% 0%, #111 0%, #050505 40%, transparent 100%);
-      opacity: 0.9;
-      pointer-events: none;
-    }
-
-    .eye::before {
-      top: -25%;
-    }
-
-    .eye::after {
-      bottom: -25%;
-      transform: scaleY(-1);
-    }
-
-    .eye-ball {
-      position: relative;
-      width: 38px;
-      height: 38px;
-      border-radius: 50%;
-      background: radial-gradient(circle, #660000 0%, #210000 55%, #000 100%);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      box-shadow: 0 0 18px rgba(176,0,32,0.9);
-    }
-
-    .pupil {
-      position: relative;
-      width: 16px;
-      height: 16px;
-      border-radius: 50%;
-      background: #000;
-      box-shadow: 0 0 18px rgba(255,255,255,0.25);
-      transition: transform 0.08s linear;
-    }
-
-    .pupil::after {
-      content: "";
-      position: absolute;
-      width: 5px;
-      height: 5px;
-      border-radius: 50%;
-      background: rgba(255,255,255,0.7);
-      top: 3px;
-      left: 4px;
-    }
-
-    /* œil "en colère" : quand il reste trop longtemps */
-    .eye.awake .eye-ball {
-      background: radial-gradient(circle, #9b0000 0%, #2b0000 55%, #000 100%);
-      box-shadow: 0 0 25px rgba(255,0,0,0.9);
-    }
-
-    .eye.awake {
-      animation-duration: 3s;
-    }
-
-    /* état "fermé" quand on clique */
-    .eye.closed {
-      opacity: 0;
-      pointer-events: none;
-      transform: scale(0.7);
-    }
-
-    /* écran de fin */
-    #game-over-overlay {
-      position: fixed;
-      inset: 0;
-      background: radial-gradient(circle at center, rgba(0,0,0,0.95) 0%, rgba(0,0,0,1) 60%);
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      color: var(--text);
-      z-index: 5;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.4s;
-      text-align: center;
-      padding: 20px;
-    }
-
-    #game-over-overlay.show {
-      opacity: 1;
-      pointer-events: auto;
-    }
-
-    #game-over-overlay h1 {
-      font-size: 42px;
-      letter-spacing: 0.2em;
-      margin-bottom: 14px;
-      color: var(--blood);
-    }
-
-    #game-over-overlay p {
-      font-size: 16px;
-      max-width: 420px;
-      margin-bottom: 18px;
-    }
-
-    #restart {
-      margin-top: 6px;
-      font-family: "Roboto Mono", monospace;
-      font-size: 13px;
-      padding: 8px 16px;
-      border-radius: 3px;
-      border: 1px solid var(--blood);
-      background: transparent;
-      color: var(--text);
-      cursor: pointer;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-    }
-
-    #restart:hover {
-      background: var(--blood-soft);
-    }
-
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jeu du Juste Prix (Plus ou Moins)</title>
+    <style>
+        /* CSS simple pour l'ergonomie (à placer idéalement dans un fichier style.css) */
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #f4f4f9;
+            color: #333;
+            padding-top: 50px;
+        }
+        .container {
+            width: 90%;
+            max-width: 400px;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            color: #007bff;
+        }
+        input[type="number"], button {
+            padding: 10px;
+            margin: 10px 0;
+            width: 100%;
+            box-sizing: border-box;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+        button {
+            background-color: #28a745;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #218838;
+        }
+        .resultat {
+            margin-top: 20px;
+            padding: 10px;
+            min-height: 40px;
+            font-size: 1.1em;
+            font-weight: bold;
+            border-radius: 5px;
+        }
+        .historique {
+            margin-top: 15px;
+            text-align: left;
+            padding: 10px;
+            border-top: 1px dashed #ccc;
+        }
+    </style>
 </head>
 <body>
 
-  <div id="scene">
-    <div id="spiral-bg"></div>
-  </div>
+<div class="container">
+    <h1>🔢 Le Juste Prix</h1>
+    <p>Devinez le nombre secret entre 1 et 100.</p>
+    
+    <input type="number" id="devinette" placeholder="Entrez votre proposition" min="1" max="100">
+    
+    <button onclick="verifierProposition()">Deviner</button>
 
-  <div id="hud">
-    yeux réduits : <span id="closed-count">0</span><br>
-    yeux encore ouverts : <span id="open-count">0</span> / <span id="max-eyes"></span>
-  </div>
+    <div id="resultat" class="resultat"></div>
 
-  <div id="hint">
-    Clique sur les yeux pour les faire taire.<br>
-    S'ils sont trop nombreux en même temps… ils te remarquent.
-  </div>
+    <p>Tentatives restantes : <span id="tentativesRestantes">7</span></p>
 
-  <div id="game-over-overlay">
-    <h1>GAME OVER</h1>
-    <p id="game-over-text"></p>
-    <button id="restart">recommencer</button>
-  </div>
+    <div class="historique">
+        <strong>Historique :</strong>
+        <span id="listeHistorique"></span>
+    </div>
 
-  <script>
-    const scene = document.getElementById("scene");
-    const closedCountEl = document.getElementById("closed-count");
-    const openCountEl = document.getElementById("open-count");
-    const maxEyesEl = document.getElementById("max-eyes");
-    const overlay = document.getElementById("game-over-overlay");
-    const overlayText = document.getElementById("game-over-text");
-    const restartBtn = document.getElementById("restart");
+    <button id="boutonRejouer" onclick="reinitialiserJeu()" style="display: none;">Rejouer</button>
 
-    let mouseX = window.innerWidth / 2;
-    let mouseY = window.innerHeight / 2;
+</div>
 
-    let eyes = [];
-    let closedCount = 0;
-    let openCount = 0;
+<script>
+    let nombreSecret;
+    let tentativesRestantes;
+    const MAX_TENTATIVES = 7;
+    let jeuTermine = false;
 
-    const maxEyes = 12;          // nb max d'yeux tolérés
-    const spawnIntervalMs = 1800;
-    let spawnIntervalId = null;
-    let gameOver = false;
+    // --- Fonctions du Jeu ---
 
-    maxEyesEl.textContent = maxEyes;
+    function initialiserJeu() {
+        // Définit un nombre secret aléatoire entre 1 et 100
+        nombreSecret = Math.floor(Math.random() * 100) + 1;
+        tentativesRestantes = MAX_TENTATIVES;
+        jeuTermine = false;
 
-    document.addEventListener("mousemove", (e) => {
-      mouseX = e.clientX;
-      mouseY = e.clientY;
-    });
+        document.getElementById('devinette').value = '';
+        document.getElementById('devinette').disabled = false;
+        document.getElementById('resultat').textContent = "C'est parti !";
+        document.getElementById('resultat').style.backgroundColor = 'transparent';
+        document.getElementById('tentativesRestantes').textContent = tentativesRestantes;
+        document.getElementById('listeHistorique').textContent = 'Aucune tentative.';
+        document.getElementById('boutonRejouer').style.display = 'none';
+    }
 
-    function createEye() {
-      if (gameOver) return;
+    function verifierProposition() {
+        if (jeuTermine) return;
 
-      const eye = document.createElement("div");
-      eye.classList.add("eye");
+        const inputElement = document.getElementById('devinette');
+        const devinette = parseInt(inputElement.value);
+        const resultatDiv = document.getElementById('resultat');
 
-      const eyeBall = document.createElement("div");
-      eyeBall.classList.add("eye-ball");
-
-      const pupil = document.createElement("div");
-      pupil.classList.add("pupil");
-
-      eyeBall.appendChild(pupil);
-      eye.appendChild(eyeBall);
-      scene.appendChild(eye);
-
-      // Position aléatoire, mais en évitant trop le centre exact
-      const padding = 40;
-      const w = window.innerWidth;
-      const h = window.innerHeight;
-
-      let x = Math.random() * (w - 2 * padding) + padding;
-      let y = Math.random() * (h - 2 * padding) + padding;
-
-      eye.style.left = `${x}px`;
-      eye.style.top = `${y}px`;
-
-      const eyeData = {
-        el: eye,
-        pupil,
-        awake: false
-      };
-
-      eyes.push(eyeData);
-      openCount++;
-      updateHud();
-
-      // Après un moment, l’œil devient "awake"
-      const awakeTimeout = setTimeout(() => {
-        if (!gameOver && !eye.classList.contains("closed")) {
-          eye.classList.add("awake");
-          eyeData.awake = true;
-          checkGameOver();
+        if (isNaN(devinette) || devinette < 1 || devinette > 100) {
+            resultatDiv.textContent = "Veuillez entrer un nombre valide entre 1 et 100.";
+            resultatDiv.style.backgroundColor = '#ffcdd2'; /* Rouge clair */
+            return;
         }
-      }, 4000 + Math.random() * 2000);
 
-      eyeData.awakeTimeout = awakeTimeout;
+        // Mise à jour des tentatives
+        tentativesRestantes--;
+        document.getElementById('tentativesRestantes').textContent = tentativesRestantes;
 
-      // Click = fermer l'œil
-      eye.addEventListener("click", () => {
-        if (gameOver || eye.classList.contains("closed")) return;
-        eye.classList.add("closed");
-        clearTimeout(awakeTimeout);
-        setTimeout(() => {
-          eye.remove();
-        }, 260);
-        openCount--;
-        closedCount++;
-        updateHud();
-      });
+        // Mise à jour de l'historique
+        let listeHistorique = document.getElementById('listeHistorique');
+        let historiqueText = listeHistorique.textContent === 'Aucune tentative.' ? '' : listeHistorique.textContent + ', ';
+        listeHistorique.textContent = historiqueText + devinette;
+
+        if (devinette === nombreSecret) {
+            // Gagné
+            resultatDiv.textContent = `🎉 Bravo ! Vous avez trouvé ${nombreSecret} !`;
+            resultatDiv.style.backgroundColor = '#d4edda'; // Vert clair
+            terminerJeu(true);
+        } else if (tentativesRestantes === 0) {
+            // Perdu (plus de tentatives)
+            resultatDiv.textContent = `😭 Perdu ! Le nombre secret était ${nombreSecret}.`;
+            resultatDiv.style.backgroundColor = '#f8d7da'; // Rouge très clair
+            terminerJeu(false);
+        } else if (devinette < nombreSecret) {
+            // Indice Plus
+            resultatDiv.textContent = "C'est PLUS !";
+            resultatDiv.style.backgroundColor = '#fff3cd'; // Jaune clair
+        } else {
+            // Indice Moins
+            resultatDiv.textContent = "C'est MOINS !";
+            resultatDiv.style.backgroundColor = '#fff3cd'; // Jaune clair
+        }
+        
+        // Vider le champ après la saisie
+        inputElement.value = '';
+        // Re-focus pour l'ergonomie
+        inputElement.focus();
     }
 
-    function updateHud() {
-      closedCountEl.textContent = closedCount;
-      openCountEl.textContent = openCount;
-      checkGameOver();
+    function terminerJeu(aGagne) {
+        jeuTermine = true;
+        document.getElementById('devinette').disabled = true;
+        document.getElementById('boutonRejouer').style.display = 'block';
     }
 
-    function checkGameOver() {
-      if (openCount >= maxEyes && !gameOver) {
-        triggerGameOver();
-      }
+    function reinitialiserJeu() {
+        initialiserJeu();
     }
 
-    function triggerGameOver() {
-      gameOver = true;
-      clearInterval(spawnIntervalId);
-
-      const texts = [
-        "Tu en as fermé quelques-uns, mais les autres te regardaient déjà depuis l'intérieur.",
-        "Tu croyais les faire taire. Ils attendaient seulement que tu clignes des yeux.",
-        "Tu n'as pas perdu le jeu. Tu as simplement découvert que tu n'étais pas seul devant l'écran."
-      ];
-      overlayText.textContent = texts[Math.floor(Math.random() * texts.length)];
-
-      overlay.classList.add("show");
-    }
-
-    function resetGame() {
-      gameOver = false;
-
-      eyes.forEach(e => {
-        clearTimeout(e.awakeTimeout);
-        e.el.remove();
-      });
-      eyes = [];
-      closedCount = 0;
-      openCount = 0;
-      updateHud();
-
-      overlay.classList.remove("show");
-
-      // relancer le spawn
-      spawnIntervalId = setInterval(createEye, spawnIntervalMs);
-      // créer quelques yeux de base
-      for (let i = 0; i < 3; i++) createEye();
-    }
-
-    // Boucle qui fait suivre la pupille vers la souris
-    function animatePupils() {
-      eyes.forEach((eyeData) => {
-        const rect = eyeData.el.getBoundingClientRect();
-        const centerX = rect.left + rect.width / 2;
-        const centerY = rect.top + rect.height / 2;
-
-        const dx = mouseX - centerX;
-        const dy = mouseY - centerY;
-        const angle = Math.atan2(dy, dx);
-        const maxOffset = eyeData.awake ? 9 : 7;
-
-        const offsetX = Math.cos(angle) * maxOffset;
-        const offsetY = Math.sin(angle) * maxOffset;
-
-        eyeData.pupil.style.transform = `translate(${offsetX}px, ${offsetY}px)`;
-      });
-
-      requestAnimationFrame(animatePupils);
-    }
-
-    // Lancer jeu
-    resetGame();
-    animatePupils();
-
-    restartBtn.addEventListener("click", () => {
-      resetGame();
-    });
-  </script>
+    // Lancement du jeu au chargement de la page
+    window.onload = initialiserJeu;
+</script>
 
 </body>
 </html>
