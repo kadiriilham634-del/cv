@@ -1,5 +1,4 @@
-## Projet 5 – Version avec sons (avant-dernier)
-
+## Projet 5 – Version avec sons 
 Dans ce projet 5, j’ai repris la version précédente du jeu et j’ai ajouté une amélioration principale : **des sons** pour rendre l’expérience plus vivante.
 
 ### Ce que j’ai ajouté
