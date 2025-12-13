@@ -38,26 +38,54 @@ Ce projet m’a permis de mieux comprendre :
 ## Outils utilisés
 
 Pour réaliser ce projet, j’ai utilisé **Gemini** comme aide au démarrage, puis j’ai **apporté des modifications et des ajustements personnels** au contenu et au fonctionnement du jeu.
+Parfait, merci pour la photo 👍
+Là on a la dernière erreur précise, et je t’explique simplement.
+
+⸻
+
+❌ Pourquoi ça ne s’affiche TOUJOURS pas
+
+Cette fois, l’erreur vient de ça :
+
+F[Message d'erreur<br/>(pas d'essai perdu)]
+
+👉 Mermaid n’accepte pas les parenthèses ( ) dans le texte des blocs, surtout combinées avec <br/>.
+
+Même problème ici :
+	•	(pas d'essai perdu)
+	•	guillemets "Bravo"
+	•	accents + symboles dans certains cas
+
+Résultat : parse error → pas de dessin.
+
+⸻
+
+✅ Solution sûre à 100 % (celle qui marche)
+
+👉 On simplifie le texte dans les blocs, sans parenthèses, sans guillemets, sans phrases longues.
+
+🔧 Copie-colle EXACTEMENT ce diagramme (et remplace l’ancien) :
 
 ## Diagramme de flux du projet
 
 ```mermaid
 flowchart TD
-    A[Début] --> B[Initialisation du jeu<br/>Nombre aléatoire 1-100<br/>7 essais]
-    B --> C[Affichage de l'interface<br/>Champ + bouton]
-    C --> D[L'utilisateur entre un nombre]
-    D --> E{Nombre valide ?}
+    A[Début] --> B[Initialisation du jeu]
+    B --> C[Afficher interface]
+    C --> D[Saisie du nombre]
+    D --> E{Nombre valide}
 
-    E -- Non --> F[Message d'erreur<br/>(pas d'essai perdu)]
+    E -- Non --> F[Message erreur]
     F --> D
 
-    E -- Oui --> G[Comparaison avec le nombre à trouver]
+    E -- Oui --> G[Comparer avec nombre cible]
 
-    G --> H{Nombre correct ?}
-    H -- Oui --> I[Message "Bravo"<br/>Fin du jeu]
+    G --> H{Nombre correct}
+    H -- Oui --> I[Bravo]
+    I --> J[Fin du jeu]
 
-    H -- Non --> J[Indication<br/>Plus / Moins]
-    J --> K{Essais restants ?}
+    H -- Non --> K[Plus ou Moins]
+    K --> L{Essais restants}
 
-    K -- Oui --> D
-    K -- Non --> L[Message "Perdu"<br/>Fin du jeu]
+    L -- Oui --> D
+    L -- Non --> M[Perdu]
