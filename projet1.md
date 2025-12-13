@@ -41,70 +41,26 @@ Pour réaliser ce projet, j’ai utilisé **Gemini** comme aide au démarrage, p
 
 ## Diagramme de flux du projet
 
+```md
+## Diagramme de flux du projet
 
-          ┌──────────────┐
-          │     Début    │
-          └──────┬───────┘
-                 │
-                 v
-   ┌─────────────────────────┐
-   │ Initialisation du jeu   │
-   │ - Nombre aléatoire 1-100│
-   │ - 7 essais              │
-   │ - Historique vide       │
-   └──────────┬──────────────┘
-              │
-              v
-   ┌─────────────────────────┐
-   │ Affichage de l'interface│
-   │ Champ + bouton          │
-   └──────────┬──────────────┘
-              │
-              v
-   ┌─────────────────────────┐
-   │ L'utilisateur entre     │
-   │ un nombre               │
-   └──────────┬──────────────┘
-              │
-              v
-        ┌───────────────┐
-        │ Nombre valide │
-        │ (1 à 100) ?   │
-        └──────┬────────┘
-           non  │  oui
-                │
-   ┌────────────▼──────────┐
-   │ Message d'erreur      │
-   │ (pas d'essai perdu)   │
-   └────────────┬──────────┘
-                │
-                └───────────────┐
-                                v
-                  ┌────────────────────────┐
-                  │ Comparaison avec        │
-                  │ le nombre à trouver     │
-                  └──────────┬─────────────┘
-                             │
-                 ┌───────────┴───────────┐
-                 │                       │
-                 v                       v
-        ┌────────────────┐     ┌─────────────────┐
-        │ Nombre correct │     │ Nombre incorrect │
-        └──────┬─────────┘     └─────────┬───────┘
-               │                           │
-               v                           v
-      ┌──────────────────┐      ┌──────────────────┐
-      │ Message "Bravo"  │      │ Indication       │
-      │ Fin du jeu       │      │ "Plus / Moins"   │
-      └──────────────────┘      └─────────┬────────┘
-                                           │
-                                           v
-                                 ┌──────────────────┐
-                                 │ Essais restants ?│
-                                 └───────┬──────────┘
-                                   non   │   oui
-                                         │
-                               ┌─────────▼──────────┐
-                               │ Message "Perdu"    │
-                               │ Fin du jeu         │
-                               └────────────────────┘
+```mermaid
+flowchart TD
+    A[Début] --> B[Initialisation du jeu<br/>Nombre aléatoire 1-100<br/>7 essais<br/>Historique vide]
+    B --> C[Affichage de l'interface<br/>Champ + bouton]
+    C --> D[L'utilisateur entre un nombre]
+    D --> E{Nombre valide<br/>(1 à 100) ?}
+
+    E -- Non --> F[Message d'erreur<br/>(pas d'essai perdu)]
+    F --> D
+
+    E -- Oui --> G[Comparaison avec<br/>le nombre à trouver]
+
+    G --> H{Nombre correct ?}
+    H -- Oui --> I[Message "Bravo"<br/>Fin du jeu]
+
+    H -- Non --> J[Indication<br/>"Plus" ou "Moins"]
+    J --> K{Essais restants ?}
+
+    K -- Oui --> D
+    K -- Non --> L[Message "Perdu"<br/>Fin du jeu]
