@@ -38,9 +38,6 @@ Ce projet m’a permis de mieux comprendre :
 ## Outils utilisés
 
 Pour réaliser ce projet, j’ai utilisé **Gemini** comme aide au démarrage, puis j’ai **apporté des modifications et des ajustements personnels** au contenu et au fonctionnement du jeu.
-Parfait, merci pour la photo 👍
-Là on a la dernière erreur précise, et je t’explique simplement.
-
 
 
 ## Diagramme de flux du projet
@@ -55,8 +52,3 @@ flowchart TD
   E --> F[Fin]
 
   D -- Non --> C
-  D -- Oui --> E[Bravo]
-  E --> F[Fin]
-
-  D -- Non --> G[Plus ou Moins]
-  G --> 
