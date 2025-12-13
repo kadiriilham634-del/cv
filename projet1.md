@@ -41,12 +41,10 @@ Pour réaliser ce projet, j’ai utilisé **Gemini** comme aide au démarrage, p
 
 ## Diagramme de flux du projet
 
-```md
-## Diagramme de flux du projet
 
 ```mermaid
 flowchart TD
-    A[Début] --> B[Initialisation du jeu<br/>Nombre aléatoire 1-100<br/>7 essais<br/>Historique vide]
+    A[Début] --> B[Initialisation du jeu<br/>Nombre aléatoire 1-100<br/>7 essais]
     B --> C[Affichage de l'interface<br/>Champ + bouton]
     C --> D[L'utilisateur entre un nombre]
     D --> E{Nombre valide<br/>(1 à 100) ?}
