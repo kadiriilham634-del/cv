@@ -1,11 +1,37 @@
-Pour cette dernière version, j’ai gardé toute la logique du jeu, mais j’ai surtout
-travaillé sur le visuel et l’ambiance. L’interface est plus soignée : fond en dégradé,
-carte arrondie, textes plus lisibles, et des messages de résultat mieux différenciés
-(bienvenue, erreur, victoire, défaite, chaud / froid / tiède).
-Le mode sombre est toujours là, mais mieux intégré au design, avec des couleurs adaptées
-pour chaque état du jeu.
-Les sons ont aussi été ajustés : petit arpège au démarrage, mélodie de victoire ou de
-défaite, et sons différents selon la distance (froid, tiède, très proche).
-On garde le reste : choix de difficulté, record sauvegardé, barre de progression,
-historique des tentatives. Cette version finale rend le même jeu plus agréable, plus clair et
-plus « fini » à l’écran.
+## Projet 6 – Version finale du jeu
+
+Ce sixième projet correspond à la **version la plus aboutie du jeu**.  
+Il reprend l’ensemble des fonctionnalités développées dans les versions précédentes et les consolide dans une expérience cohérente et fluide.
+
+### Fonctionnalités présentes
+
+- **Choix de la difficulté** avec des plages de nombres et un nombre de tentatives adaptés.
+- **Bornes dynamiques** : la plage de recherche se réduit après chaque tentative incorrecte.
+- **Système de record** : le meilleur score est sauvegardé et affiché automatiquement.
+- **Mode clair / mode sombre** avec mémorisation du choix de l’utilisateur.
+- **Barre de progression** indiquant visuellement les tentatives restantes.
+- **Indices visuels et textuels** : plus / moins, froid / tiède / proche.
+- **Retour sonore** : sons doux associés aux actions du joueur (tentative, indice, victoire, défaite).
+- **Interface améliorée** : messages clairs, historique lisible et navigation fluide.
+
+Cette version finale met l’accent sur l’**expérience utilisateur**, en combinant logique de jeu, clarté visuelle et feedback sonore, tout en restant simple à comprendre et à utiliser.
+
+## Diagramme de flux – Projet 6
+
+```mermaid
+flowchart TD
+  A[Debut] --> B[Choix difficulte]
+  B --> C[Initialisation du jeu]
+  C --> D[Saisie du nombre]
+
+  D --> E{Correct}
+
+  E -- Oui --> F[Victoire + son]
+  F --> G[Record / Rejouer]
+
+  E -- Non --> H[Indice visuel + son]
+  H --> I[Tentatives restantes ?]
+
+  I -- Oui --> D
+  I -- Non --> J[Defaite + son]
+  J --> G
