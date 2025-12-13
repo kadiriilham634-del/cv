@@ -41,23 +41,22 @@ Pour réaliser ce projet, j’ai utilisé **Gemini** comme aide au démarrage, p
 
 ## Diagramme de flux du projet
 
-
 ```mermaid
 flowchart TD
     A[Début] --> B[Initialisation du jeu<br/>Nombre aléatoire 1-100<br/>7 essais]
     B --> C[Affichage de l'interface<br/>Champ + bouton]
     C --> D[L'utilisateur entre un nombre]
-    D --> E{Nombre valide<br/>(1 à 100) ?}
+    D --> E{Nombre valide ?}
 
     E -- Non --> F[Message d'erreur<br/>(pas d'essai perdu)]
     F --> D
 
-    E -- Oui --> G[Comparaison avec<br/>le nombre à trouver]
+    E -- Oui --> G[Comparaison avec le nombre à trouver]
 
     G --> H{Nombre correct ?}
     H -- Oui --> I[Message "Bravo"<br/>Fin du jeu]
 
-    H -- Non --> J[Indication<br/>"Plus" ou "Moins"]
+    H -- Non --> J[Indication<br/>Plus / Moins]
     J --> K{Essais restants ?}
 
     K -- Oui --> D
