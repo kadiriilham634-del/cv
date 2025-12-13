@@ -1,10 +1,15 @@
-Dans cette version, le jeu n’est plus limité à un seul mode. J’ai ajouté un menu qui
-permet de choisir entre trois niveaux de difficulté avec des plages de nombres et 
-des nombres de tentatives différents.
-L’interface change ensuite automatiquement le nombre secret, les essais
-possibles et la limite des valeurs s’adaptent au niveau choisi.
-J’ai aussi amélioré l’affichage, ajouté un bouton pour rejouer en revenant au choix
-de difficulté, et rendu la saisie plus claire en indiquant les erreurs et la bonne plage de nombres.
+## Deuxième projet – Version avec niveaux de difficulté
+
+Dans cette deuxième version, le jeu a été amélioré et n’est plus limité à un seul mode.  
+Un **menu de sélection** permet de choisir entre **trois niveaux de difficulté**.
+
+Chaque niveau propose une **plage de nombres différente** ainsi qu’un **nombre de tentatives adapté**.  
+Une fois la difficulté choisie, le jeu s’adapte automatiquement : le nombre secret change, le nombre d’essais disponibles est mis à jour et la plage de valeurs autorisées s’ajuste au niveau sélectionné.
+
+L’interface a également été améliorée afin de rendre le jeu plus clair et plus facile à utiliser.  
+Un **bouton “Rejouer”** permet de revenir au choix de la difficulté, et des **messages d’erreur** indiquent au joueur lorsque la saisie est incorrecte ou hors de la plage attendue.
+
+Pour réaliser cette version, j’ai utilisé **Gemini** comme base de travail, puis j’ai **apporté des modifications et des ajustements personnels** au fonctionnement et à l’affichage du jeu.
 
 ## Diagramme de flux 
 
