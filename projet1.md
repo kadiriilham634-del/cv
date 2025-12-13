@@ -54,5 +54,9 @@ flowchart TD
   D -- Oui --> E[Bravo]
   E --> F[Fin]
 
+  D -- Non --> C
+  D -- Oui --> E[Bravo]
+  E --> F[Fin]
+
   D -- Non --> G[Plus ou Moins]
   G --> 
