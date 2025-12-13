@@ -26,8 +26,7 @@ Les animations sont légères et servent surtout à rendre l’expérience plus 
 - HTML  
 - CSS  
 - JavaScript  
-- Anime.js  
-
+ 
 ## Apports du projet
 
 Ce projet m’a permis de mieux comprendre :
