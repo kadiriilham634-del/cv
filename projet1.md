@@ -39,27 +39,50 @@ Ce projet m’a permis de mieux comprendre :
 
 Pour réaliser ce projet, j’ai utilisé **Gemini** comme aide au démarrage, puis j’ai **apporté des modifications et des ajustements personnels** au contenu et au fonctionnement du jeu.
 
-flowchart TD
-A[Début] --> B[Initialiser le jeu<br/>- nombre aléatoire 1..100<br/>- essais = 7<br/>- historique = vide]
-B --> C[Afficher l'interface<br/>champ + bouton Valider]
-C --> D{L'utilisateur saisit un nombre<br/>et clique "Valider"}
-D --> E{Entrée valide ?<br/>vide / pas un nombre / hors 1..100}
-E -- Non --> F[Afficher message d'erreur<br/>et ne pas consommer d'essai]
-F --> D
+## Diagramme de flux du projet
 
-E -- Oui --> G[Enregistrer la tentative<br/>dans l'historique]
-G --> H[essais = essais - 1]
-H --> I{Nombre = cible ?}
-I -- Oui --> J[Afficher "Bravo"<br/>bloquer les entrées]
-J --> K[Proposer "Rejouer"]
-K --> B
-
-I -- Non --> L{Nombre < cible ?}
-L -- Oui --> M[Afficher "C'est plus"]
-L -- Non --> N[Afficher "C'est moins"]
-M --> O{essais > 0 ?}
-N --> O
-
-O -- Oui --> D
-O -- Non --> P[Afficher "Perdu"<br/>révéler la cible]
-P --> K
+Début
+  |
+  v
+Initialisation du jeu
+- Génération d’un nombre aléatoire (1–100)
+- Nombre d’essais = 7
+- Historique vide
+  |
+  v
+Affichage de l’interface
+(champ de saisie + bouton)
+  |
+  v
+L’utilisateur entre un nombre
+  |
+  v
+Le nombre est-il valide ?
+(nombre entre 1 et 100)
+  |                |
+  | non            | oui
+  v                v
+Message d’erreur   Tentative enregistrée
+(pas d’essai perdu)|
+                   v
+            Comparaison avec le nombre à trouver
+                   |
+        -----------------------------
+        |                           |
+     Correct                     Incorrect
+        |                           |
+        v                           v
+Message "Bravo"              Indication
+Fin du jeu                  ("Plus" / "Moins")
+                                |
+                                v
+                       Essais restants ?
+                           |          |
+                         oui          non
+                           |          |
+                           v          v
+                     Nouvelle        Message
+                     tentative       "Perdu"
+                                        |
+                                        v
+                                   Fin du jeu
