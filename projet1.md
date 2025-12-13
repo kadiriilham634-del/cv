@@ -41,48 +41,70 @@ Pour réaliser ce projet, j’ai utilisé **Gemini** comme aide au démarrage, p
 
 ## Diagramme de flux du projet
 
-Début
-  |
-  v
-Initialisation du jeu
-- Génération d’un nombre aléatoire (1–100)
-- Nombre d’essais = 7
-- Historique vide
-  |
-  v
-Affichage de l’interface
-(champ de saisie + bouton)
-  |
-  v
-L’utilisateur entre un nombre
-  |
-  v
-Le nombre est-il valide ?
-(nombre entre 1 et 100)
-  |                |
-  | non            | oui
-  v                v
-Message d’erreur   Tentative enregistrée
-(pas d’essai perdu)|
-                   v
-            Comparaison avec le nombre à trouver
-                   |
-        -----------------------------
-        |                           |
-     Correct                     Incorrect
-        |                           |
-        v                           v
-Message "Bravo"              Indication
-Fin du jeu                  ("Plus" / "Moins")
-                                |
+
+          ┌──────────────┐
+          │     Début    │
+          └──────┬───────┘
+                 │
+                 v
+   ┌─────────────────────────┐
+   │ Initialisation du jeu   │
+   │ - Nombre aléatoire 1-100│
+   │ - 7 essais              │
+   │ - Historique vide       │
+   └──────────┬──────────────┘
+              │
+              v
+   ┌─────────────────────────┐
+   │ Affichage de l'interface│
+   │ Champ + bouton          │
+   └──────────┬──────────────┘
+              │
+              v
+   ┌─────────────────────────┐
+   │ L'utilisateur entre     │
+   │ un nombre               │
+   └──────────┬──────────────┘
+              │
+              v
+        ┌───────────────┐
+        │ Nombre valide │
+        │ (1 à 100) ?   │
+        └──────┬────────┘
+           non  │  oui
+                │
+   ┌────────────▼──────────┐
+   │ Message d'erreur      │
+   │ (pas d'essai perdu)   │
+   └────────────┬──────────┘
+                │
+                └───────────────┐
                                 v
-                       Essais restants ?
-                           |          |
-                         oui          non
-                           |          |
-                           v          v
-                     Nouvelle        Message
-                     tentative       "Perdu"
-                                        |
-                                        v
-                                   Fin du jeu
+                  ┌────────────────────────┐
+                  │ Comparaison avec        │
+                  │ le nombre à trouver     │
+                  └──────────┬─────────────┘
+                             │
+                 ┌───────────┴───────────┐
+                 │                       │
+                 v                       v
+        ┌────────────────┐     ┌─────────────────┐
+        │ Nombre correct │     │ Nombre incorrect │
+        └──────┬─────────┘     └─────────┬───────┘
+               │                           │
+               v                           v
+      ┌──────────────────┐      ┌──────────────────┐
+      │ Message "Bravo"  │      │ Indication       │
+      │ Fin du jeu       │      │ "Plus / Moins"   │
+      └──────────────────┘      └─────────┬────────┘
+                                           │
+                                           v
+                                 ┌──────────────────┐
+                                 │ Essais restants ?│
+                                 └───────┬──────────┘
+                                   non   │   oui
+                                         │
+                               ┌─────────▼──────────┐
+                               │ Message "Perdu"    │
+                               │ Fin du jeu         │
+                               └────────────────────┘
