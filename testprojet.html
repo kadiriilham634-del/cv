@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>GAME OVER</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<!-- Tone.js -->
+<script src="https://unpkg.com/tone@14.8.49/build/Tone.js"></script>
+
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+
+<style>
+  body{
+    margin:0;height:100vh;background:#000;display:flex;justify-content:center;align-items:center;
+    font-family:"Press Start 2P", monospace; overflow:hidden;
+  }
+  .screen{ text-align:center; animation:flicker 2s infinite; }
+  h1{
+    font-size:clamp(80px,7vw,72px);
+    color:#ff0000;
+    text-shadow:0 0 10px red, 0 0 25px darkred;
+    margin:0;
+  }
+  p{
+    font-size:20px;color:#ff6666;margin-top:18px;line-height:1.7;
+  }
+  .controls{
+    margin-top:18px; display:flex; gap:12px; justify-content:center; flex-wrap:wrap;
+  }
+  button{
+    font-family:"Press Start 2P", monospace;
+    font-size:20px;
+    padding:12px 14px;
+    border-radius:12px;
+    border:1px solid rgba(255,0,0,.35);
+    background:rgba(255,0,0,.08);
+    color:#ff2a2a;
+    cursor:pointer;
+  }
+  button:active{ transform:scale(.98); }
+  .status{
+    position:fixed; bottom:12px; right:12px;
+    font-family:system-ui, sans-serif;
+    font-size:12px;
+    color:#ff5555;
+    background:rgba(0,0,0,.45);
+    padding:8px 10px;
+    border:1px solid rgba(255,0,0,.3);
+    border-radius:8px;
+  }
+  @keyframes flicker{
+    0%,100%{opacity:1}
+    50%{opacity:.85}
+    70%{opacity:.65}
+  }
+</style>
+</head>
+
+<body>
+
+<div class="screen">
+  <h1>GAME OVER</h1>
+ 
+<br>
+<br>
+
+  <div class="controls">
+    <button id="toggleBtn">🔇 SON : OFF</button>
+    <button id="replayBtn">▶ REJOUER LE MOTIF</button>
+  </div>
+</div>
+
+<div class="status" id="status">Son : en attente d’interaction</div>
+
+<script>
+  // ===== Tone.js loopable "Game Over" ambience =====
+
+  const statusEl = document.getElementById("status");
+  const toggleBtn = document.getElementById("toggleBtn");
+  const replayBtn = document.getElementById("replayBtn");
+
+  let initialized = false;
+  let isOn = false;
+
+  let synth, loop;
+
+  async function initAudioIfNeeded(){
+    if(initialized) return;
+
+    await Tone.start();                 // obligatoire
+    Tone.Transport.bpm.value = 80;      // tempo "lent"
+
+    // Synth rétro soft
+    synth = new Tone.Synth({
+      oscillator: { type: "triangle" },
+      envelope: { attack: 0.01, decay: 0.25, sustain: 0.25, release: 0.9 }
+    }).toDestination();
+
+    // Loop : petit motif (C - Eb - G) + pause, en boucle
+    loop = new Tone.Loop((time) => {
+      // Motif étalé dans le temps
+      synth.triggerAttackRelease("C4", "8n", time);
+      synth.triggerAttackRelease("D#4", "8n", time + 0.5);
+      synth.triggerAttackRelease("G3", "8n", time + 1.0);
+      // (le Loop se répète toutes les 2s ci-dessous)
+    }, "2s");
+
+    initialized = true;
+    statusEl.textContent = "Son : prêt ✅ (mets ON quand tu veux)";
+  }
+
+  function setUI(){
+    toggleBtn.textContent = isOn ? "🔊 SON : ON" : "🔇 SON : OFF";
+    statusEl.textContent = isOn ? "Son : en boucle 🔁" : (initialized ? "Son : prêt (OFF)" : "Son : en attente d’interaction");
+  }
+
+  async function toggleSound(){
+    await initAudioIfNeeded();
+
+    if(!isOn){
+      // ON
+      isOn = true;
+      loop.start(0);
+      Tone.Transport.start();
+    }else{
+      // OFF
+      isOn = false;
+      loop.stop(0);
+      // on laisse le Transport tourner ou on stop : je stop pour être clean
+      Tone.Transport.stop();
+    }
+
+    setUI();
+  }
+
+  async function replayOnce(){
+    await initAudioIfNeeded();
+    // rejoue le motif une fois même si OFF
+    const now = Tone.now();
+    synth.triggerAttackRelease("C4", "8n", now);
+    synth.triggerAttackRelease("D#4", "8n", now + 0.5);
+    synth.triggerAttackRelease("G3", "8n", now + 1.0);
+    statusEl.textContent = "Motif rejoué ▶";
+    setTimeout(setUI, 700);
+  }
+
+  // Boutons
+  toggleBtn.addEventListener("click", (e) => { e.stopPropagation(); toggleSound(); });
+  replayBtn.addEventListener("click", (e) => { e.stopPropagation(); replayOnce(); });
+
+  // 1ère interaction : prépare l’audio (sans forcément activer ON)
+  document.addEventListener("click", async () => {
+    if(!initialized){
+      await initAudioIfNeeded();
+      setUI();
+    }
+  }, { once:false });
+
+  // Touche M pour ON/OFF
+  document.addEventListener("keydown", (e) => {
+    if(e.code === "KeyM") toggleSound();
+  });
+
+  setUI();
+</script>
+
+</body>
+</html>
