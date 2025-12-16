@@ -21,6 +21,8 @@ Dans ce projet 5, j’ai repris la version précédente du jeu et j’ai ajouté
 
 L’objectif de cette version était d’améliorer l’ambiance du jeu et de donner un retour plus immédiat au joueur grâce au son.
 
+Pour cette partie du projet, je me suis appuyée sur l'IA, **Claude** afin de m’aider à concevoir et structurer l’intégration sonore. 
+
 ## Diagramme de flux 
 
 ```mermaid
