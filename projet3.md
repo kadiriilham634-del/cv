@@ -1,16 +1,16 @@
 ## Troisième projet – Nouvelles fonctionnalités ajoutées
 
-Dans ce troisième projet, j’ai apporté plusieurs améliorations au jeu afin de le rendre plus complet et plus interactif.
+Dans ce troisième projet, j’ai cherché à améliorer le jeu pour le rendre plus complet et plus agréable à utiliser.
 
-Tout d’abord, j’ai ajouté un **système de record**.  
-Le jeu mémorise désormais le **meilleur score**, c’est-à-dire le **nombre minimum de tentatives utilisées pour trouver le bon nombre**.  
-Ce record s’affiche sous le menu de difficulté et se met automatiquement à jour lorsqu’une meilleure performance est réalisée, même après avoir rechargé la page.
+Pour développer ce projet, je me suis appuyée sur l’IA, en particulier **Gemini**. J’ai d’abord utilisé pour générer une base de code à partir de **prompts décrivant le principe du jeu et ses règles générales**. Ensuite, j’ai repris ce travail pour **modifier la logique**, ajuster certaines fonctionnalités et adapter le jeu selon mes propres choix et préférences.
 
-Ensuite, j’ai fait évoluer la **logique du jeu**.  
-La **plage de recherche devient dynamique** : après chaque tentative incorrecte, les bornes minimales et maximales sont ajustées en fonction de la réponse donnée.  
-Le joueur voit ainsi clairement la **nouvelle zone dans laquelle chercher**, ce qui rend les indices plus précis.
+J’ai d’abord ajouté un **système de record**.  
+Le jeu conserve désormais le **meilleur score**, correspondant au **nombre minimum de tentatives nécessaires pour trouver le bon nombre**. Ce record s’affiche sous le menu de difficulté et se met automatiquement à jour lorsqu’une meilleure performance est réalisée, même après avoir rechargé la page.
 
-Ces ajouts permettent de rendre le jeu plus **guidé**, plus **intelligent** et plus **motivant** pour l’utilisateur.
+J’ai également fait évoluer la **logique du jeu**.  
+La **plage de recherche devient dynamique** : après chaque tentative incorrecte, les valeurs minimales et maximales sont ajustées en fonction de la réponse du joueur. Cela permet de visualiser plus clairement la **zone dans laquelle chercher**, rendant les indices plus précis.
+
+Ces différentes améliorations rendent le jeu plus **guidé**, plus **cohérent** et plus **motivant**, tout en montrant comment l’intelligence artificielle peut être utilisée comme un **outil d’aide**, complété par un travail personnel d’adaptation et d’amélioration.
 
 ## Diagramme de flux 
 
