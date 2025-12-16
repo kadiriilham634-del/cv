@@ -16,6 +16,9 @@ Il reprend l’ensemble des fonctionnalités développées dans les versions pr�
 
 Cette version finale met l’accent sur l’**expérience utilisateur**, en combinant logique de jeu, clarté visuelle et feedback sonore, tout en restant simple à comprendre et à utiliser.
 
+Pour cette dernière version, j’ai utilisé l’IA **Gemini** comme point de départ, notamment pour réfléchir au **visuel de l’interface**. J’ai ensuite retravaillé l’ensemble du jeu, en ajustant la logique, les fonctionnalités et l’apparence, afin que le résultat final corresponde pleinement à mes choix et à ma vision du projet.
+
+
 ## Diagramme de flux – Projet 6
 
 ```mermaid
